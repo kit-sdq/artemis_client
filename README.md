@@ -6,7 +6,7 @@
 # OPTIONAL: Create a venv
 python -m venv env
 source env/bin/activate # Unix
-.\env\Scripts\activate  # Windows
+# .\env\Scripts\activate  # Windows
 
 
 # Install dev dependencies
