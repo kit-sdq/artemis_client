@@ -1,11 +1,24 @@
-# Usage
+# Artemis Client
 
+
+## Setting up a development environment
 ```bash
-# Optionally create a venv 
-pip install -r requirements.txt
+# OPTIONAL: Create a venv
+python -m venv env
+source env/bin/activate # Unix
+.\env\Scripts\activate  # Windows
 
-pytest  # thats all
+
+# Install dev dependencies
+pip install --upgrade --force-reinstall -r requirements.tx
 ```
 
-# Folder layout
+
+### Testing
+
+```bash
+tox  # thats all
+```
+
+### Folder layout
 This project uses the "Tests outside application code" layout presented (here)[https://docs.pytest.org/en/6.2.x/goodpractices.html#test-discovery] (sources in src folder). 
