@@ -2,6 +2,7 @@
 # Testing & Setup
 tox
 pytest
+black
 
 # Application requirements
 # Note: This should be consistent with install_requires in setup.cfg

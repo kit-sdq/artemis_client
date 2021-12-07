@@ -1,6 +1,5 @@
 import configparser
 import os
-import logging
 
 CONFIG_FILE = os.getenv("ARTEMIS_CLIENT_CONFIG", "config.ini")
 PARSER = None
@@ -10,12 +9,13 @@ if PARSER is None:
         PARSER = configparser.ConfigParser()
         PARSER.read(CONFIG_FILE)
 
-def get_value(section: str, key:str) -> str:
+
+def get_value(section: str, key: str) -> str:
+    """Returns a configuration value in the specified section.
+    """
     environ_key = f"{section}_{key}"
     if environ_key in os.environ:
         return os.environ[environ_key]
-    else:
-        logging.debug(f"{environ_key} was not found in environment variables.")
 
     if PARSER and section in PARSER and key in PARSER[section]:
         return PARSER[section][key]
@@ -25,3 +25,12 @@ def get_value(section: str, key:str) -> str:
                    or a environment variable {environ_key}.
                    """)
 
+
+def get_url(section: str, key: str) -> str:
+    """ Same as get_value but sanitizes urls.
+    """
+    value = get_value(section, key)
+    value = value.removesuffix("/")
+    if not value.startswith("http"):
+        value = "https://" + value
+    return value

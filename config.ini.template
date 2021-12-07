@@ -1,8 +1,4 @@
 [ARTEMIS]
 URL = 
-
-[GITLAB]
-URL = 
-
-[JENKINS]
-URL = 
+USERNAME = 
+PASSWORD = 
