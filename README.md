@@ -1,5 +1,12 @@
 # Artemis Client
 
+## Installation
+```bash
+git clone https://git.scc.kit.edu/i43/lehre/programmieren/artemis/ArtemisTests
+cd ArtemisTests
+pip install .
+```
+
 ## Configuration
 The client can be configured either by configuration file or by environment variables.
 
