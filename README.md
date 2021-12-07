@@ -1,5 +1,14 @@
 # Artemis Client
 
+## Configuration
+The client can be configured either by configuration file or by environment variables.
+
+- Provide a file 'config.ini' in the working directory
+- Provide a file 'config.ini' in a custom directory and set ARTEMIS_CLIENT_CONFIG environment variable accordingly
+- Provide all configuration options as environment variables (SECTION_KEY)
+
+Values found in environment variables are preferred over configuration files. That can be used to provide credentials in a testing environment, for example.
+
 
 ## Setting up a development environment
 ```bash
