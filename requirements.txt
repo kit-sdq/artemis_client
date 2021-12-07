@@ -1,6 +1,7 @@
 # This file defines the development requirements
 # Testing & Setup
 tox
+pytest
 
 # Application requirements
 # Note: This should be consistent with install_requires in setup.cfg
