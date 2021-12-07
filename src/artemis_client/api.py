@@ -1,4 +1,7 @@
-from typing import TypedDict, List
+from typing import TypedDict, List, Literal
+
+
+Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_EDITOR"]
 
 
 class LoginVM(TypedDict):
@@ -20,7 +23,7 @@ class UserDTORequired(TypedDict):
     lastModifiedBy: str
     lastModifiedDate: str
     id: int
-    authorities: List[str]
+    authorities: List[Role]
 
 
 class UserDTO(UserDTORequired, total=False):
