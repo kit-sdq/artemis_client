@@ -27,7 +27,7 @@ def get_value(section: str, key: str) -> str:
 
 
 def get_url(section: str, key: str) -> str:
-    """ Same as get_value but sanitizes urls.
+    """ Same as get_value but sanitizes URLs.
     """
     value = get_value(section, key)
     value = value.removesuffix("/")
