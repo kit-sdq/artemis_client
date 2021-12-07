@@ -1,4 +1,4 @@
-from typing import TypedDict, List
+from typing import TypedDict, List, Optional
 
 
 class LoginVM(TypedDict):
@@ -7,14 +7,12 @@ class LoginVM(TypedDict):
     rememberMe: bool
 
 
-class UserDTO(TypedDict):
+class UserDTORequired(TypedDict):
     login: str
     name: str
     firstName: str
     lastName: str
     email: str
-    visibleRegistrationNumber: str
-    imageUrl: str
     activated: bool
     langKey: str
     createdBy: str
@@ -22,6 +20,11 @@ class UserDTO(TypedDict):
     lastModifiedBy: str
     lastModifiedDate: str
     id: int
-    lastNotificationRead: str
     authorities: List[str]
+
+
+class UserDTO(UserDTORequired, total=False):
+    visibleRegistrationNumber: str
+    imageUrl: str
     groups: List[str]
+    lastNotificationRead: str
