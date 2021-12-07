@@ -3,7 +3,7 @@
 import asyncio
 import pytest
 
-from artemis_client.artemis_session import ArtemisSession
+from artemis_client.session import ArtemisSession
 
 
 # Make sure the event loop is reused: Allow reusing artemis session

@@ -1,3 +1,3 @@
-# from .artemis_session import ArtemisSession
+from .session import ArtemisSession
 
-# __all__ = ["ArtemisSession", ]
+__all__ = ["ArtemisSession", ]

@@ -6,7 +6,7 @@ import logging
 
 from aiohttp.client_reqrep import ClientResponse
 
-from artemis_client.artemis_api import LoginVM
+from artemis_client.api import LoginVM
 from .configuration import get_url, get_value
 
 AUTHORIZATION_HEADER = "authorization"
@@ -26,16 +26,21 @@ class ArtemisSession:
 
     _session: Optional[ClientSession] = None
     _token: Optional[str] = None
-    _url: str
-    _login_vm: LoginVM
 
     def __init__(self, url: Optional[str] = None, username: Optional[str] = None, password: Optional[str] = None) -> None:
-        self._login_vm = {
+        self._login_vm: LoginVM = {
             "username": username or get_value("ARTEMIS", "USERNAME"),
             "password": password or get_value("ARTEMIS", "PASSWORD"),
             "rememberMe": False,
         }
-        self._url = url or get_url("ARTEMIS", "URL")
+        self._url: str = url or get_url("ARTEMIS", "URL")
+
+        # Must be imported here to prevent circular import error!
+        import artemis_client.managers
+        """See :class:`~artemis_client.managers.AccountManager`"""
+        self.account = artemis_client.managers.AccountManager(self)
+        """See :class:`~artemis_client.managers.TimeManager`"""
+        self.time = artemis_client.managers.TimeManager(self)
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url)
