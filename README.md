@@ -1,5 +1,8 @@
 # Artemis Client
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+
 ## Installation
 ```bash
 git clone https://git.scc.kit.edu/i43/lehre/programmieren/artemis/ArtemisTests
