@@ -4,22 +4,22 @@ from aiohttp.client_reqrep import ClientResponse
 
 
 class _RequestFunctionType(Protocol):
-    async def __call__(self, api_endpoint: str, **req_args) -> ClientResponse:
+    async def __call__(self, api_endpoint: str, **kwargs) -> ClientResponse:
         ...
 
 
 async def paginate_json(
-    request_function: _RequestFunctionType,
+    get_function: _RequestFunctionType,
     api_endpoint: str,
     http_params={},
     page_size: int = 50,
     max_pages: int = 0,
-    **args
+    **kwargs
 ) -> AsyncGenerator[Any, None]:
     http_params["page"] = 0
     http_params["pageSize"] = page_size
     while not max_pages or http_params["page"] <= max_pages:
-        resp = await request_function(api_endpoint, params=http_params, **args)
+        resp = await get_function(api_endpoint, params=http_params, **kwargs)
         resp_list = await resp.json()
         if not resp_list:
             break

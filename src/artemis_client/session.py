@@ -66,76 +66,76 @@ class ArtemisSession:
 
     # Query ARTEMIS endpoints
 
-    async def get_endpoint(self, endpoint: str, **get_args) -> ClientResponse:
+    async def get_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().get(
-            self._get_endpoint_url(endpoint), **get_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
-    async def post_endpoint(self, endpoint: str, **post_args) -> ClientResponse:
+    async def post_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().post(
-            self._get_endpoint_url(endpoint), **post_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
-    async def put_endpoint(self, endpoint: str, **put_args) -> ClientResponse:
+    async def put_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().put(
-            self._get_endpoint_url(endpoint), **put_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
-    async def delete_endpoint(self, endpoint: str, **put_args) -> ClientResponse:
+    async def delete_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().delete(
-            self._get_endpoint_url(endpoint), **put_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
-    async def head_endpoint(self, endpoint: str, **put_args) -> ClientResponse:
+    async def head_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().head(
-            self._get_endpoint_url(endpoint), **put_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
-    async def options_endpoint(self, endpoint: str, **put_args) -> ClientResponse:
+    async def options_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().options(
-            self._get_endpoint_url(endpoint), **put_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
-    async def patch_endpoint(self, endpoint: str, **put_args) -> ClientResponse:
+    async def patch_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().patch(
-            self._get_endpoint_url(endpoint), **put_args
+            self._get_endpoint_url(endpoint), **kwargs
         )
 
     # Query Artemis /api endpoints
 
-    async def get_api_endpoint(self, api_endpoint: str, **get_args) -> ClientResponse:
+    async def get_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().get(
-            self._get_api_endpoint_url(api_endpoint), **get_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
-    async def post_api_endpoint(self, api_endpoint: str, **post_args) -> ClientResponse:
+    async def post_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().post(
-            self._get_api_endpoint_url(api_endpoint), **post_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
-    async def put_api_endpoint(self, api_endpoint: str, **put_args) -> ClientResponse:
+    async def put_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().put(
-            self._get_api_endpoint_url(api_endpoint), **put_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
-    async def delete_api_endpoint(self, api_endpoint: str, **put_args) -> ClientResponse:
+    async def delete_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().delete(
-            self._get_api_endpoint_url(api_endpoint), **put_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
-    async def head_api_endpoint(self, api_endpoint: str, **put_args) -> ClientResponse:
+    async def head_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().head(
-            self._get_api_endpoint_url(api_endpoint), **put_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
-    async def options_api_endpoint(self, api_endpoint: str, **put_args) -> ClientResponse:
+    async def options_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().options(
-            self._get_api_endpoint_url(api_endpoint), **put_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
-    async def patch_api_endpoint(self, api_endpoint: str, **put_args) -> ClientResponse:
+    async def patch_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
         return await self._get_session().patch(
-            self._get_api_endpoint_url(api_endpoint), **put_args
+            self._get_api_endpoint_url(api_endpoint), **kwargs
         )
 
     ###################################
