@@ -7,10 +7,12 @@ Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_ED
 # is implemented.
 # Also, Artemis uses different DTOs and even Attributes depending on the query
 
+
 class LoginVM(TypedDict):
     username: str
     password: str
     rememberMe: bool
+
 
 class SearchUserDTORequired(TypedDict):
     login: str
@@ -52,5 +54,12 @@ class UserDTO(UserDTORequired, total=False):
     lastNotificationRead: str
 
 
-class ManagedUserVM(UserDTO):
+class ManagedUserVM(TypedDict):
+    login: str
+    firstName: str
+    lastName: str
+    email: str
     password: str
+    imageUrl: str
+    visibleRegistrationNumber: str
+    authorities: List[Role]

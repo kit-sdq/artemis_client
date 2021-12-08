@@ -1,6 +1,6 @@
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List, Optional
 from aiohttp.client_reqrep import ClientResponse
-from artemis_client.api import ManagedUserVM, SearchUserDTO, UserDTO
+from artemis_client.api import ManagedUserVM, Role, SearchUserDTO, UserDTO
 from artemis_client.managers.manager import ArtemisManager
 from artemis_client.utils.paginate import paginate_json
 
@@ -48,22 +48,45 @@ class UserManager(ArtemisManager):
 
         return await self._session.put_api_endpoint("/users", json=user)
 
+    async def get_authorities(self) -> List[Role]:
+        resp = await self._session.get_api_endpoint("/users/authorities")
+        roles = await resp.json()
+        return roles
+
+    async def get_user(self, login: str) -> Optional[UserDTO]:
+        resp = await self._session.get_api_endpoint("/users/" + login)
+        if resp.status == 404:
+            return None
+        user = await resp.json()
+        return user
+
+    async def delete_user(self, login: str) -> ClientResponse:
+        resp = await self._session.delete_api_endpoint("/users/" + login)
+        return resp
+
     async def get_users(
-        self, search_term: str = "", page_size: int = 50, sorting_order="ASCENDING", sorted_column: str = "id"
+        self,
+        search_term: str = "",
+        page_size: int = 50,
+        sorting_order="ASCENDING",
+        sorted_column: str = "id",
     ) -> AsyncGenerator[UserDTO, None]:
+        """Generates the users."""
         params = {
             "searchTerm": search_term,
             "sortingOrder": sorting_order,
-            "sortedColumn": sorted_column
+            "sortedColumn": sorted_column,
         }
 
-        async for obj in paginate_json(self._session.get_api_endpoint, "/users", params, page_size=page_size):
+        async for obj in paginate_json(
+            self._session.get_api_endpoint, "/users", params, page_size=page_size
+        ):
             yield obj
 
     async def search_users(
         self, login_or_name: str
     ) -> AsyncGenerator[SearchUserDTO, None]:
-        """ Nearly the same as get_users.
+        """Nearly the same as get_users.
 
         The API endpoint removes information from the object. Only INSTRUCTOR role is needed.
         """
@@ -72,5 +95,11 @@ class UserManager(ArtemisManager):
         }
 
         # Artemis does not return a empty list, when querying for more pages
-        async for obj in paginate_json(self._session.get_api_endpoint, "/users/search", params, page_size=25, max_pages=1):
+        async for obj in paginate_json(
+            self._session.get_api_endpoint,
+            "/users/search",
+            params,
+            page_size=25,
+            max_pages=1,
+        ):
             yield obj
