@@ -41,6 +41,8 @@ class ArtemisSession:
         self.account = artemis_client.managers.AccountManager(self)
         """See :class:`~artemis_client.managers.TimeManager`"""
         self.time = artemis_client.managers.TimeManager(self)
+        """See :class:`~artemis_client.managers.UserManager`"""
+        self.user = artemis_client.managers.UserManager(self)
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url)
@@ -135,6 +137,11 @@ class ArtemisSession:
         return await self._get_session().patch(
             self._get_api_endpoint_url(api_endpoint), **put_args
         )
+
+    ###################################
+
+    def get_username(self) -> str:
+        return self._login_vm["username"]
 
     ###################################
 

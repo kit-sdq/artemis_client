@@ -1,6 +1,5 @@
 from typing import TypedDict, List, Literal
 
-
 Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_EDITOR"]
 
 
@@ -31,3 +30,7 @@ class UserDTO(UserDTORequired, total=False):
     imageUrl: str
     groups: List[str]
     lastNotificationRead: str
+
+
+class ManagedUserVM(UserDTO):
+    password: str
