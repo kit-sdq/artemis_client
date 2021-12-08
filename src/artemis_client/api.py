@@ -63,3 +63,4 @@ class ManagedUserVM(TypedDict):
     imageUrl: str
     visibleRegistrationNumber: str
     authorities: List[Role]
+    groups: List[str]

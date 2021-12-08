@@ -39,7 +39,8 @@ async def test_create_delete_user(artemis_session: ArtemisSession):
         "email": "testuser@test.test",
         "password": "testpw123",
         "imageUrl": "",
-        "visibleRegistrationNumber": ""
+        "visibleRegistrationNumber": "",
+        "groups": []
     }
     resp = await artemis_session.user.create_user(test_user)
     assert resp.ok
