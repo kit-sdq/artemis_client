@@ -17,3 +17,21 @@ async def test_account(artemis_session: ArtemisSession):
     check_type("account", account, UserDTO)
     assert account["activated"] is True
     assert "ROLE_ADMIN" in account["authorities"]
+
+
+@pytest.mark.asyncio
+async def test_update_account(artemis_session: ArtemisSession):
+    account: UserDTO = await artemis_session.account.get_account()
+    old_name = account["firstName"]
+    account["firstName"] = "test"
+
+    resp = await artemis_session.account.update_account(account)
+    assert resp.ok or "User Registration is disabled" in (await resp.text())
+
+    if resp.ok:
+        updated_account: UserDTO = await artemis_session.account.get_account()
+        assert updated_account["firstName"] == account["firstName"]
+
+        account["firstName"] = old_name
+        updated_account: UserDTO = await artemis_session.account.get_account()
+        assert updated_account["firstName"] == old_name
