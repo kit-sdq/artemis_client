@@ -1,10 +1,15 @@
-from typing import Any, AsyncGenerator, Callable, Coroutine
-import logging
+from typing import Any, AsyncGenerator, Protocol
+
 from aiohttp.client_reqrep import ClientResponse
 
 
+class _RequestFunctionType(Protocol):
+    async def __call__(self, api_endpoint: str, **req_args) -> ClientResponse:
+        ...
+
+
 async def paginate_json(
-    request_function: Callable[[str, dict], Coroutine[Any, Any, ClientResponse]],
+    request_function: _RequestFunctionType,
     api_endpoint: str,
     http_params={},
     page_size: int = 50,
