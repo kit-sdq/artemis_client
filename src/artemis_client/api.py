@@ -148,6 +148,10 @@ class CourseWithStats(Course, CourseStats):
     pass
 
 
+class CourseWithExercises(Course):
+    exercises: List["Exercise"]
+
+
 class Team(BaseEntity, total=False):
     name: str
     shortName: str
@@ -461,3 +465,55 @@ class Exercise(BaseEntity, total=False):
     gradingCriteria: List[GradingCriterion]
     exerciseGroup: ExerciseGroup
     learningGoals: List[LearningGoal]
+
+
+class ExamSession(BaseEntity):
+    studentExam: "StudentExam"
+    sessionToken: str
+    initialSession: bool
+
+
+class StudentExam(BaseEntity, total=False):
+    workingTime: int
+    submitted: bool
+    started: bool
+    testRun: bool
+    submissionDate: str
+    user: User
+    exam: "Exam"
+    exercises: List[Exercise]
+    examSessions: List[ExamSession]
+
+    ended: bool
+
+
+class Exam(BaseEntity, total=False):
+    title: str
+    visibleDate: str
+    startDate: str
+    endDate: str
+    publishResultsDate: str
+    examStudentReviewStart: str
+    examStudentReviewEnd: str
+    gracePeriod: int
+    examiner: str
+    moduleNumber: str
+    courseName: str
+
+    startText: str
+    endText: str
+    confirmationStartText: str
+    confirmationEndText: str
+    maxPoints: float
+    randomizeExerciseOrder: bool
+    numberOfExercisesInExam: int
+    numberOfCorrectionRoundsInExam: int
+    course: Course
+    exerciseGroups: List[ExerciseGroup]
+    studentExams: List[StudentExam]
+    registeredUsers: List[User]
+
+    numberOfRegisteredUsers: int
+
+    examArchivePath: str
+    latestIndividualEndDate: str

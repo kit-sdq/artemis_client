@@ -1,5 +1,6 @@
 import pytest
 from typeguard import check_type
+from aiohttp.client_exceptions import ClientResponseError
 
 from artemis_client.api import UserDTO, UserDTORequired
 from artemis_client.session import ArtemisSession
@@ -24,14 +25,14 @@ async def test_update_account(artemis_session: ArtemisSession):
     account: UserDTO = await artemis_session.account.get_account()
     old_name = account["firstName"]
     account["firstName"] = "test"
-
-    resp = await artemis_session.account.update_account(account)
-    assert resp.ok or "User Registration is disabled" in (await resp.text())
-
-    if resp.ok:
+    try:
+        resp = await artemis_session.account.update_account(account)
         updated_account: UserDTO = await artemis_session.account.get_account()
         assert updated_account["firstName"] == account["firstName"]
 
         account["firstName"] = old_name
         updated_account: UserDTO = await artemis_session.account.get_account()
         assert updated_account["firstName"] == old_name
+    except ClientResponseError as e:
+        assert e.status == 403
+        # "User Registration is disabled"

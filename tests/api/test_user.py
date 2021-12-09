@@ -1,4 +1,5 @@
 from typing import List
+from aiohttp.client_exceptions import ClientResponseError
 import pytest
 
 from typeguard import check_type
@@ -29,7 +30,8 @@ async def test_get_user(artemis_session: ArtemisSession):
 
 @pytest.mark.asyncio
 async def test_create_delete_user(artemis_session: ArtemisSession):
-    assert not await artemis_session.user.get_user("testuser_hda783")
+    with pytest.raises(ClientResponseError):  # 404 not found
+        await artemis_session.user.get_user("testuser_hda783")
 
     test_user: ManagedUserVM = {
         "login": "testuser_hda783",
@@ -47,7 +49,8 @@ async def test_create_delete_user(artemis_session: ArtemisSession):
 
     assert await artemis_session.user.get_user("testuser_hda783")
     await artemis_session.user.delete_user("testuser_hda783")
-    assert not await artemis_session.user.get_user("testuser_hda783")
+    with pytest.raises(ClientResponseError):
+        await artemis_session.user.get_user("testuser_hda783")
 
 
 @pytest.mark.asyncio

@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, List, Optional
+from typing import AsyncGenerator, List
 from aiohttp.client_reqrep import ClientResponse
 from artemis_client.api import ManagedUserVM, Role, SearchUserDTO, UserDTO
 from artemis_client.managers.manager import ArtemisManager
@@ -53,10 +53,8 @@ class UserManager(ArtemisManager):
         roles = await resp.json()
         return roles
 
-    async def get_user(self, login: str) -> Optional[UserDTO]:
+    async def get_user(self, login: str) -> UserDTO:
         resp = await self._session.get_api_endpoint("/users/" + login)
-        if resp.status == 404:
-            return None
         user = await resp.json()
         return user
 

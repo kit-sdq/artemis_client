@@ -1,5 +1,7 @@
-from typing import AsyncGenerator, Optional
-from artemis_client.api import Course, CourseWithStats
+from typing import AsyncGenerator
+
+from aiohttp.client_reqrep import ClientResponse
+from artemis_client.api import Course, CourseWithExercises, CourseWithStats, User
 from artemis_client.managers.manager import ArtemisManager
 
 
@@ -25,8 +27,34 @@ class CourseManager(ArtemisManager):
         for course in courses:
             yield course
 
-    async def get_course(self, id: int) -> Optional[CourseWithStats]:
+    async def get_course(self, id: int) -> CourseWithStats:
         resp = await self._session.get_api_endpoint("/courses/" + str(id))
-        if not resp.ok:
-            return None
         return await resp.json()
+
+    async def get_course_with_exercises(self, id: int) -> CourseWithExercises:
+        resp = await self._session.get_api_endpoint("/courses/" + str(id) + "/with-exercises")
+        return await resp.json()
+
+    async def delete_course(self, id: int) -> ClientResponse:
+        return await self._session.delete_api_endpoint("/courses/" + str(id))
+
+    async def archive_course(self, id: int) -> ClientResponse:
+        return await self._session.put_api_endpoint("/courses/" + str(id) + "/archive")
+
+    async def _get_users_in_course(self, id: int, api_user_type: str):
+        resp = await self._session.get_api_endpoint("/courses/" + str(id) + "/" + api_user_type)
+        users = await resp.json()
+        for user in users:
+            yield user
+
+    async def get_students_in_course(self, id: int) -> AsyncGenerator[User, None]:
+        return self._get_users_in_course(id, "students")
+
+    async def get_tutors_in_course(self, id: int) -> AsyncGenerator[User, None]:
+        return self._get_users_in_course(id, "tutors")
+
+    async def get_editors_in_course(self, id: int) -> AsyncGenerator[User, None]:
+        return self._get_users_in_course(id, "editors")
+
+    async def get_instructors_in_course(self, id: int) -> AsyncGenerator[User, None]:
+        return self._get_users_in_course(id, "instructors")

@@ -3,6 +3,8 @@ from .account import AccountManager
 from .time import TimeManager
 from .user import UserManager
 from .course import CourseManager
+from .exam import ExamManager
+from .exercise import ExerciseManager
 
 __all__ = [
     "ArtemisManager",
@@ -10,4 +12,6 @@ __all__ = [
     "TimeManager",
     "UserManager",
     "CourseManager",
+    "ExamManager",
+    "ExerciseManager"
 ]

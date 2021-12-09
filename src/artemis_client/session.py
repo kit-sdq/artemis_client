@@ -21,7 +21,7 @@ class ArtemisSession:
 
     This class is based of aiohttp.ClienSession().
     All API methods allow supplying kwargs controlling the underlaying
-    ClientSession method.
+    ClientSession method. When an API call failes an exception is raised.
     """
 
     _session: Optional[ClientSession] = None
@@ -45,9 +45,13 @@ class ArtemisSession:
         self.user = artemis_client.managers.UserManager(self)
         """See :class:`~artemis_client.managers.CourseManager`"""
         self.course = artemis_client.managers.CourseManager(self)
+        """See :class:`~artemis_client.managers.ExamManager`"""
+        self.exam = artemis_client.managers.ExamManager(self)
+        """See :class:`~artemis_client.managers.ExerciseManager`"""
+        self.exercise = artemis_client.managers.ExerciseManager(self)
 
     async def __aenter__(self, *_):
-        self._session = ClientSession(self._url)
+        self._session = ClientSession(self._url, raise_for_status=True)
         if self._token is None:
             self._token = await self._login()
         self._session.headers[AUTHORIZATION_HEADER] = self._token
