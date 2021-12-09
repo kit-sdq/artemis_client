@@ -43,6 +43,8 @@ class ArtemisSession:
         self.time = artemis_client.managers.TimeManager(self)
         """See :class:`~artemis_client.managers.UserManager`"""
         self.user = artemis_client.managers.UserManager(self)
+        """See :class:`~artemis_client.managers.CourseManager`"""
+        self.course = artemis_client.managers.CourseManager(self)
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url)
