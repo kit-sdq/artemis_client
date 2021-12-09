@@ -24,13 +24,3 @@ def get_value(section: str, key: str) -> str:
                    Please provide a file {CONFIG_FILE} with the section {section} and a key {key}
                    or a environment variable {environ_key}.
                    """)
-
-
-def get_url(section: str, key: str) -> str:
-    """ Same as get_value but sanitizes URLs.
-    """
-    value = get_value(section, key)
-    value = value.removesuffix("/")
-    if not value.startswith("http"):
-        value = "https://" + value
-    return value

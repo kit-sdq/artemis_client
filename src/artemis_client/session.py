@@ -5,7 +5,8 @@ import logging
 from aiohttp.client_reqrep import ClientResponse
 
 from artemis_client.api import LoginVM
-from .configuration import get_url, get_value
+from artemis_client.utils.url import sanitize_url
+from .configuration import get_value
 
 AUTHORIZATION_HEADER = "authorization"
 
@@ -29,7 +30,7 @@ class ArtemisSession:
             "password": password or get_value("ARTEMIS", "PASSWORD"),
             "rememberMe": False,
         }
-        self._url: str = url or get_url("ARTEMIS", "URL")
+        self._url: str = sanitize_url(url or get_value("ARTEMIS", "URL"))
 
         # Must be imported here to prevent circular import error!
         import artemis_client.managers
