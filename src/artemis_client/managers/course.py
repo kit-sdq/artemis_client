@@ -1,7 +1,7 @@
 from typing import AsyncGenerator
 
 from aiohttp.client_reqrep import ClientResponse
-from artemis_client.api import Course, CourseWithExercises, CourseWithStats, User
+from artemis_client.api import Course, CourseWithExercises, CourseWithStats, Exercise, User
 from artemis_client.managers.manager import ArtemisManager
 
 
@@ -34,6 +34,13 @@ class CourseManager(ArtemisManager):
     async def get_course_with_exercises(self, id: int) -> CourseWithExercises:
         resp = await self._session.get_api_endpoint("/courses/" + str(id) + "/with-exercises")
         return await resp.json()
+
+    async def get_exercises_for_course(self, course_id: int) -> AsyncGenerator[Exercise, None]:
+        course = await self.get_course_with_exercises(course_id)
+        if not course or "exercises" not in course:
+            raise StopAsyncIteration
+        for exercise in course["exercises"]:
+            yield exercise
 
     async def delete_course(self, id: int) -> ClientResponse:
         return await self._session.delete_api_endpoint("/courses/" + str(id))

@@ -16,5 +16,8 @@ class ExamManager(ArtemisManager):
         return await resp.json()
 
     async def get_exercise_groups(self, course_id: int, exam_id: int) -> AsyncGenerator[ExerciseGroup, None]:
-
-        pass
+        exam = await self.get_exam_with_exercise_groups_and_exercises(course_id, exam_id)
+        if "exerciseGroups" not in exam:
+            raise StopAsyncIteration
+        for group in exam["exerciseGroups"]:
+            yield group
