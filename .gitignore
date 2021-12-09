@@ -2,6 +2,10 @@ pyrightconfig.json
 config.ini
 pytest.log
 
+# Docs
+docs/artemis_client*
+docs/modules.rst
+
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 

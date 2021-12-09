@@ -1,5 +1,3 @@
-""" Artemis Session to store credentials and reuse TCP connections.
-"""
 from aiohttp import ClientSession
 from typing import Optional
 import logging
@@ -15,9 +13,7 @@ AUTHORIZATION_HEADER = "authorization"
 class ArtemisSession:
     """This class describes an session with the Artemis REST API.
 
-    Usage:
-    async with ArtemisSession() as session:
-        # do something with session
+    Stores credentials and reuse TCP connections.
 
     This class is based of aiohttp.ClienSession().
     All API methods allow supplying kwargs controlling the underlaying
@@ -37,18 +33,18 @@ class ArtemisSession:
 
         # Must be imported here to prevent circular import error!
         import artemis_client.managers
-        """See :class:`~artemis_client.managers.AccountManager`"""
         self.account = artemis_client.managers.AccountManager(self)
-        """See :class:`~artemis_client.managers.TimeManager`"""
+        """See :class:`~artemis_client.managers.AccountManager`"""
         self.time = artemis_client.managers.TimeManager(self)
-        """See :class:`~artemis_client.managers.UserManager`"""
+        """See :class:`~artemis_client.managers.TimeManager`"""
         self.user = artemis_client.managers.UserManager(self)
-        """See :class:`~artemis_client.managers.CourseManager`"""
+        """See :class:`~artemis_client.managers.UserManager`"""
         self.course = artemis_client.managers.CourseManager(self)
-        """See :class:`~artemis_client.managers.ExamManager`"""
+        """See :class:`~artemis_client.managers.CourseManager`"""
         self.exam = artemis_client.managers.ExamManager(self)
-        """See :class:`~artemis_client.managers.ExerciseManager`"""
+        """See :class:`~artemis_client.managers.ExamManager`"""
         self.exercise = artemis_client.managers.ExerciseManager(self)
+        """See :class:`~artemis_client.managers.ExerciseManager`"""
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url, raise_for_status=True)

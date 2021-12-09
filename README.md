@@ -40,4 +40,13 @@ tox  # thats all
 ```
 
 ### Folder layout
-This project uses the "Tests outside application code" layout presented [here](https://docs.pytest.org/en/6.2.x/goodpractices.html#test-discovery) (sources in src folder). 
+This project uses the "Tests outside application code" layout presented [here](https://docs.pytest.org/en/6.2.x/goodpractices.html#test-discovery) (sources in src folder).
+
+### Build the docs
+You can build the documentation using sphinx:
+
+```bash
+tox -e docs
+```
+
+The docs can then be found in `.tox/docs_out`
