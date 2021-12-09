@@ -26,7 +26,8 @@ async def test_update_account(artemis_session: ArtemisSession):
     old_name = account["firstName"]
     account["firstName"] = "test"
     try:
-        resp = await artemis_session.account.update_account(account)
+        await artemis_session.account.update_account(account)
+        # exception may occur here
         updated_account: UserDTO = await artemis_session.account.get_account()
         assert updated_account["firstName"] == account["firstName"]
 
@@ -35,4 +36,4 @@ async def test_update_account(artemis_session: ArtemisSession):
         assert updated_account["firstName"] == old_name
     except ClientResponseError as e:
         assert e.status == 403
-        # "User Registration is disabled"
+        pytest.skip("User Registration is disabled")

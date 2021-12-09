@@ -10,9 +10,15 @@ from artemis_client.session import ArtemisSession
 async def test_get_courses(artemis_session: ArtemisSession):
     async for c in artemis_session.course.get_courses():
         check_type("c", c, Course)
+        break
+    else:
+        pytest.skip("No course found")
 
 
 @pytest.mark.asyncio
 async def test_get_courses_with_stats(artemis_session: ArtemisSession):
     async for c in artemis_session.course.get_courses_with_stats():
         check_type("c", c, CourseWithStats)
+        break
+    else:
+        pytest.skip("No course found")
