@@ -45,6 +45,9 @@ async def main():
         participations = [x async for x in session.exercise.get_participations(exercise["id"])]
         piter = iter(participations)
 
+        n = len(participations)
+        i = 1
+
         fails = []
         # While the artemis_client is able to perform parallel requests
         # we do not do this here to prevent flooding the build queue.
@@ -54,19 +57,21 @@ async def main():
                 if 'participantIdentifier' not in p:
                     print("participantIdentifier missing")
                     return
-                print(f"Trigger participation for {p['participantIdentifier']}...", end="", flush=True)
+                print(f"{i:04d}/{n:04d} Trigger participation for {p['participantIdentifier']}...", end="", flush=True)
                 try:
                     await session.submission.programming.trigger_build(p)
                     print("ok")
                 except ClientResponseError as e:
                     fails += [(p['participantIdentifier'], e)]
                     print("FAIL" + str(e))
+                i = i + 1
             if not chunk:
                 break
             print("\nGiving Artemis 5s to recover...\n")
             await asyncio.sleep(5)
 
-        print("Failures:")
-        print(*fails, sep="\n")
+        if fails:
+            print("Failures:")
+            print(*fails, sep="\n")
 
 asyncio.run(main())
