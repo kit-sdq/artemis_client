@@ -50,7 +50,7 @@ async def main():
         while True:
             chunk = list(islice(piter, 10))
             for p in chunk:
-                print(f"Trigger participation for {p['participantIdentifier']}...", end="")
+                print(f"Trigger participation for {p['participantIdentifier']}...", end="", flush=True)
                 try:
                     await session.submission.programming.trigger_build(p)
                     print("ok")
