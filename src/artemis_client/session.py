@@ -28,7 +28,7 @@ class ArtemisSession:
         self._login_vm: LoginVM = {
             "username": username or get_value("ARTEMIS", "USERNAME"),
             "password": password or get_value("ARTEMIS", "PASSWORD"),
-            "rememberMe": False,
+            "rememberMe": True,
         }
         self._url: str = sanitize_url(url or get_value("ARTEMIS", "URL"))
 
