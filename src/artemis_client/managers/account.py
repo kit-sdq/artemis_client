@@ -1,5 +1,6 @@
 from aiohttp.client_reqrep import ClientResponse
 from artemis_client.api import UserDTO
+from aiohttp.client_exceptions import ClientResponseError
 
 from .manager import ArtemisManager
 
@@ -8,8 +9,11 @@ class AccountManager(ArtemisManager):
     """ This class describes an account manager for the current session's account.
     """
     async def is_authenticated(self) -> bool:
-        resp = await self._session.get_api_endpoint("/authenticate")
-        return resp.ok
+        try:
+            resp = await self._session.get_api_endpoint("/authenticate")
+            return resp.ok
+        except ClientResponseError:
+            return False
 
     async def get_account(self) -> UserDTO:
         resp = await self._session.get_api_endpoint("/account")
