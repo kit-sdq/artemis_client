@@ -1,0 +1,2 @@
+git+https://git.scc.kit.edu/i43/lehre/programmieren/artemis/ArtemisTests@main
+simple-term-menu
