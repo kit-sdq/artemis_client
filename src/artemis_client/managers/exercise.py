@@ -7,7 +7,7 @@ class ExerciseManager(ArtemisManager):
 
     async def get_participations(self, exercise_id: int, with_latest_results: bool = True) -> AsyncGenerator[StudentParticipation, None]:
         params = {
-            "withLatestResult": with_latest_results
+            "withLatestResult": "true" if with_latest_results else "false"
         }
         resp = await self._session.get_api_endpoint(f"/exercises/{exercise_id}/participations", params=params)
         participations = await resp.json()
