@@ -45,7 +45,8 @@ async def main():
         participations = [x async for x in session.exercise.get_participations(exercise["id"])]
         piter = iter(participations)
 
-        # While the artemis_clinet
+        # While the artemis_client is able to perform parallel requests
+        # we do not do this here to prevent flooding the build queue.
         while True:
             chunk = list(islice(piter, 10))
             for p in chunk:
