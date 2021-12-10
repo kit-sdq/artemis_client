@@ -1,7 +1,8 @@
+from abc import ABC
 from artemis_client.session import ArtemisSession
 
 
-class ArtemisManager():
+class ArtemisManager(ABC):
 
     _session: ArtemisSession
 

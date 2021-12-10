@@ -46,6 +46,8 @@ class ArtemisSession:
         """See :class:`~artemis_client.managers.ExamManager`"""
         self.exercise = artemis_client.managers.ExerciseManager(self)
         """See :class:`~artemis_client.managers.ExerciseManager`"""
+        self.submission = artemis_client.managers.SubmissionManager(self)
+        """See :class:`~artemis_client.managers.SubmissionManager`"""
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url, raise_for_status=True)

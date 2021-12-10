@@ -5,6 +5,7 @@ from .user import UserManager
 from .course import CourseManager
 from .exam import ExamManager
 from .exercise import ExerciseManager
+from .submission import SubmissionManager
 
 __all__ = [
     "ArtemisManager",
@@ -13,5 +14,6 @@ __all__ = [
     "UserManager",
     "CourseManager",
     "ExamManager",
-    "ExerciseManager"
+    "ExerciseManager",
+    "SubmissionManager",
 ]
