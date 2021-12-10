@@ -5,7 +5,7 @@ from artemis_client.managers import ArtemisManager
 
 class ProgrammingSubmissionManager(ArtemisManager):
     async def trigger_build(
-        self, participation: Participation, submission_type: SubmissionType
+        self, participation: Participation, submission_type: SubmissionType = "MANUAL"
     ) -> ClientResponse:
         if "id" not in participation:
             raise ValueError("id is missing in participation!")
