@@ -6,7 +6,10 @@ Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_ED
 # PEP 655 https://www.python.org/dev/peps/pep-0655/
 # is implemented.
 # Also, Artemis uses different DTOs and even Attributes depending on the query
+# Note: For now to reduce the number of classes all classes are set to
+# total = False.
 
+# Some types are not modeled out completely. In this case Any is used.
 
 class LoginVM(TypedDict):
     username: str
@@ -89,7 +92,7 @@ class Organization(BaseEntity, total=False):
 
 class Account(TypedDict, total=False):
     activated: bool
-    authorities: List[str]
+    authorities: List[Role]
     login: str
     email: str
     name: str
@@ -110,6 +113,8 @@ class User(Account, BaseEntity, total=False):
     lastNotificationRead: str
     visibleRegistrationNumber: str
     password: str
+    participantIdentifier: str
+    resetDate: str
 
 
 class Course(BaseEntity, total=False):
@@ -165,9 +170,13 @@ class Team(BaseEntity, total=False):
     lastModifiedDate: str
 
 
-class ExerciseCategory(TypedDict, total=False):
-    color: str
-    category: str
+ExerciseCategory = str
+# This is what is defined in the Artemis Web-Client
+# but for some reason the backend sends just strings
+# that can be parsed into these objects?!
+# class ExerciseCategory(TypedDict, total=False):
+#     color: str
+#     category: str
 
 
 class TeamAssignmentConfig(BaseEntity, total=False):
@@ -295,13 +304,14 @@ InitializationState = Literal[
 
 
 class Participation(BaseEntity, total=False):
+    type: ParticipationType
+    # Todo: Better typing. Currently the subclasses only are differentiated by this value
     initializationState: InitializationState
     initializationDate: str
     presentationScore: int
     results: List[Result]
     submissions: List[Submission]
     exercise: "Exercise"
-    type: ParticipationType
 
     participantName: str
     participantIdentifier: str
@@ -359,6 +369,26 @@ AttachmentType = Literal[
     "FILE",
     "URL",
 ]
+
+
+class ProgrammingExerciseStudentParticipation(StudentParticipation, total=False):
+    repositoryUrl: str
+    buildPlanId: str
+    buildPlanUrl: str
+
+
+class SolutionProgrammingExerciseParticipation(Participation, total=False):
+    programmingExercise: "ProgrammingExercise"
+    repositoryUrl: str
+    buildPlanId: str
+    buildPlanUrl: str
+
+
+class TemplateProgrammingExerciseParticipation(Participation, total=False):
+    programmingExercise: "ProgrammingExercise"
+    repositoryUrl: str
+    buildPlanId: str
+    buildPlanUrl: str
 
 
 class LearningGoal(BaseEntity, total=False):
@@ -432,7 +462,12 @@ class ExerciseGroup(BaseEntity, total=False):
     exercises: List["Exercise"]
 
 
-class Exercise(BaseEntity, total=False):
+ExerciseType = Literal["programming", "modeling", "quiz", "text", "file-upload"]
+
+
+# This is the equivalent to "class Exercise implements BaseEntity" in Artemis
+class AbstractExercise(BaseEntity, total=False):
+    type: ExerciseType
     problemStatement: str
     gradingInstructions: str
     title: str
@@ -440,8 +475,8 @@ class Exercise(BaseEntity, total=False):
     releaseDate: str
     dueDate: str
     assessmentDueDate: str
-    maxPoints: int
-    bonusPoints: int
+    maxPoints: float
+    bonusPoints: float
     assessmentType: AssessmentType
     allowComplaintsForAutomaticAssessments: bool
     difficulty: Literal["EASY", "MEDIUM", "HARD"]
@@ -451,8 +486,6 @@ class Exercise(BaseEntity, total=False):
     ]
     teamAssignmentConfig: TeamAssignmentConfig
     categories: List[ExerciseCategory]
-    type: Literal["programming", "modeling", "quiz", "text", "file-upload"]
-
     teams: List[Team]
     studentParticipations: List[StudentParticipation]
     tutorParticipations: List[TutorParticipation]
@@ -465,6 +498,137 @@ class Exercise(BaseEntity, total=False):
     gradingCriteria: List[GradingCriterion]
     exerciseGroup: ExerciseGroup
     learningGoals: List[LearningGoal]
+
+    ended: bool
+    gradingInstructionFeedbackUsed: bool
+    presentationScoreEnabled: bool
+    released: bool
+    secondCorrectionEnabled: bool
+    studentAssignedTeamIdComputed: bool
+    teamMode: bool
+    visibleToStudents: bool
+
+
+ProgrammingLanguage = Literal[
+    'JAVA',
+    'PYTHON',
+    'C',
+    'HASKELL',
+    'KOTLIN',
+    'VHDL',
+    'ASSEMBLER',
+    'SWIFT',
+    'OCAML',
+    'EMPTY',
+]
+
+ProjectType = Literal[
+    'MAVEN',
+    'ECLIPSE',
+    'PLAIN',
+    'XCODE',
+]
+
+
+class ProgrammingExercise(AbstractExercise, total=False):
+    exerciseType: Literal["PROGRAMMING"]
+
+    projectKey: str
+    templateParticipation: TemplateProgrammingExerciseParticipation
+    solutionParticipation: SolutionProgrammingExerciseParticipation
+    testRepositoryUrl: str
+    publishBuildPlanUrl: bool
+    allowOnlineEditor: bool
+    staticCodeAnalysisEnabled: bool
+    maxStaticCodeAnalysisPenalty: float
+    allowOfflineIde: bool
+    programmingLanguage: ProgrammingLanguage
+    packageName: str
+    problemStatement: str
+    sequentialTestRuns: bool
+    showTestNamesToStudents: bool
+    checkoutSolutionRepository: bool
+    auxiliaryRepositories: List[Any]
+    submissionPolicy: Any
+
+    buildAndTestStudentSubmissionsAfterDueDate: str
+    testCasesChanged: bool
+
+    projectType: ProjectType
+    isLocalSimulation: bool
+    testRepositoryName: str
+
+
+UMLDiagramType = Literal[
+    'ClassDiagram',
+    'ObjectDiagram',
+    'ActivityDiagram',
+    'UseCaseDiagram',
+    'CommunicationDiagram',
+    'ComponentDiagram',
+    'DeploymentDiagram',
+    'PetriNet',
+    'SyntaxTree',
+    'Flowchart',
+]
+
+
+class ModelingExercise(AbstractExercise, total=False):
+    exerciseType: Literal["MODELING"]
+
+    diagramType: UMLDiagramType
+    sampleSolutionModel: str
+    sampleSolutionExplanation: str
+
+
+QuizStatus = Literal[
+    "CLOSED",
+    "OPEN_FOR_PRACTICE",
+    "ACTIVE",
+    "VISIBLE",
+    "HIDDEN",
+]
+
+
+class QuizExercise(AbstractExercise, total=False):
+    exerciseType: Literal["QUIZ"]
+
+    remainingTime: int
+    timeUntilPlannedStart: int
+    visibleToStudents: bool
+    randomizeQuestionOrder: bool
+    isVisibleBeforeStart: bool
+    isOpenForPractice: bool
+    isPlannedToStart: bool
+    duration: int
+    quizPointStatistic: Any
+    quizQuestions: List[Any]  # ToDo
+    status: QuizStatus
+
+    adjustedDueDate: str
+    adjustedReleaseDate: str
+    ended: bool
+    started: bool
+
+    isActiveQuiz: bool
+    isPracticeModeAvailable: bool
+
+
+class TextExercise(AbstractExercise, total=False):
+    exerciseType: Literal["TEXT"]
+
+    sampleSolution: str
+    automaticAssessmentEnabled: bool
+
+
+class FileUploadExercise(AbstractExercise, total=False):
+    exerciseType: Literal["FILE_UPLOAD"]
+
+    filePattern: str
+    sampleSolution: str
+
+
+Exercise = Union[ProgrammingExercise, ModelingExercise, QuizExercise, TextExercise, FileUploadExercise]
 
 
 class ExamSession(BaseEntity):

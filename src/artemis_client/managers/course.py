@@ -37,10 +37,9 @@ class CourseManager(ArtemisManager):
 
     async def get_exercises_for_course(self, course_id: int) -> AsyncGenerator[Exercise, None]:
         course = await self.get_course_with_exercises(course_id)
-        if not course or "exercises" not in course:
-            raise StopAsyncIteration
-        for exercise in course["exercises"]:
-            yield exercise
+        if course and "exercises" in course:
+            for exercise in course["exercises"]:
+                yield exercise
 
     async def delete_course(self, id: int) -> ClientResponse:
         return await self._session.delete_api_endpoint("/courses/" + str(id))
@@ -55,13 +54,17 @@ class CourseManager(ArtemisManager):
             yield user
 
     async def get_students_in_course(self, id: int) -> AsyncGenerator[User, None]:
-        return self._get_users_in_course(id, "students")
+        async for u in self._get_users_in_course(id, "students"):
+            yield u
 
     async def get_tutors_in_course(self, id: int) -> AsyncGenerator[User, None]:
-        return self._get_users_in_course(id, "tutors")
+        async for u in self._get_users_in_course(id, "tutors"):
+            yield u
 
     async def get_editors_in_course(self, id: int) -> AsyncGenerator[User, None]:
-        return self._get_users_in_course(id, "editors")
+        async for u in self._get_users_in_course(id, "editors"):
+            yield u
 
     async def get_instructors_in_course(self, id: int) -> AsyncGenerator[User, None]:
-        return self._get_users_in_course(id, "instructors")
+        async for u in self._get_users_in_course(id, "instructors"):
+            yield u
