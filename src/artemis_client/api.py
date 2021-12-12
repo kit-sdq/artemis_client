@@ -1,4 +1,4 @@
-from typing import Any, TypedDict, List, Literal, Union
+from typing import Any, Optional, TypedDict, List, Literal, Union
 from datetime import datetime
 
 
@@ -122,27 +122,32 @@ class User(Account, BaseEntity, total=False):
 
 class Course(BaseEntity, total=False):
     title: str
-    shortName: str
-    studentGroupName: str
-    teachingAssistantGroupName: str
-    editorGroupName: str
-    instructorGroupName: str
     testCourse: bool
-    onlineCourse: bool
-    maxComplaints: int
-    maxTeamComplaints: int
-    maxComplaintTimeDays: int
-    postsEnabled: bool
-    maxRequestMoreFeedbackTimeDays: int
-    registrationEnabled: bool
-    presentationScore: int
-    accuracyOfScores: int
-    requestMoreFeedbackEnabled: bool
-    complaintsEnabled: bool
-    semester: str
+    teachingAssistantGroupName: Optional[str]
+    studentGroupName: Optional[str]
     endDate: datetime
     startDate: datetime
-    maxPoints: int
+    maxPoints: float
+    shortName: str
+    semester: str
+    requestMoreFeedbackEnabled: bool
+    registrationEnabled: bool
+    registrationConfirmationMessage: Optional[str]
+    presentationScore: float
+    postsEnabled: bool
+    onlineCourse: bool
+    maxTeamComplaints: int
+    maxRequestMoreFeedbackTimeDays: int
+    maxComplaints: int
+    maxComplaintTimeDays: int
+    instructorGroupName: Optional[str]
+    editorGroupName: Optional[str]
+    description: str
+    customizeGroupNames: bool
+    courseIcon: Optional[str]
+    complaintsEnabled: bool
+    color: Optional[str]
+    accuracyOfScores: int
 
 
 class CourseStats(TypedDict):
@@ -395,7 +400,6 @@ class TemplateProgrammingExerciseParticipation(Participation, total=False):
 
 
 class LearningGoal(BaseEntity, total=False):
-    id: int
     title: str
     description: str
     course: Course

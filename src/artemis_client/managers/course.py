@@ -8,8 +8,14 @@ from artemis_client.utils.serialize import loads
 
 class CourseManager(ArtemisManager):
 
-    async def create_course(self):
-        pass
+    async def create_course(self, course: Course) -> Course:
+        new_course = course
+        new_course["id"] = None  # type: ignore
+        resp = await self._session.post_api_endpoint("/courses", json=new_course)
+        return await resp.json(loads=loads)
+
+    async def update_course(self, course: Course) -> ClientResponse:
+        return await self._session.put_api_endpoint("/courses", json=course)
 
     async def get_courses(self, only_active=False) -> AsyncGenerator[Course, None]:
         params = {
@@ -45,11 +51,11 @@ class CourseManager(ArtemisManager):
             for exercise in course["exercises"]:
                 yield exercise
 
-    async def delete_course(self, id: int) -> ClientResponse:
-        return await self._session.delete_api_endpoint("/courses/" + str(id))
+    async def delete_course(self, course_id: int) -> ClientResponse:
+        return await self._session.delete_api_endpoint(f"/courses/{course_id}")
 
-    async def archive_course(self, id: int) -> ClientResponse:
-        return await self._session.put_api_endpoint("/courses/" + str(id) + "/archive")
+    async def archive_course(self, course_id: int) -> ClientResponse:
+        return await self._session.put_api_endpoint(f"/courses/{course_id}/archive")
 
     async def _get_users_in_course(self, id: int, api_user_type: str):
         resp = await self._session.get_api_endpoint("/courses/" + str(id) + "/" + api_user_type)

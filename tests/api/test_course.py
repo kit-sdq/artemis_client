@@ -1,3 +1,4 @@
+from aiohttp.client_exceptions import ClientResponseError
 import pytest
 from typeguard import check_type
 from artemis_client.api import Course, CourseWithExercises, CourseWithStats, Exercise, FileUploadExercise, ModelingExercise, ProgrammingExercise, QuizExercise, TextExercise, User
@@ -113,13 +114,21 @@ async def test_file_upload_exercise_type(artemis_session: ArtemisSession):
 
 
 @pytest.mark.asyncio
-async def test_delete_course(artemis_session: ArtemisSession):
-    pytest.skip("not implemented")
+async def test_delete_course(artemis_session: ArtemisSession, test_course_generator):
+    new_course = await test_course_generator()
+    assert await artemis_session.course.get_course(new_course["id"])
+    resp = await artemis_session.course.delete_course(new_course["id"])
+    assert resp.ok
+    with pytest.raises(ClientResponseError):
+        await artemis_session.course.get_course(new_course["id"])
+    with pytest.raises(ClientResponseError):
+        await artemis_session.course.delete_course(new_course["id"])
 
 
 @pytest.mark.asyncio
-async def test_create_course(artemis_session: ArtemisSession):
-    pytest.skip("not implemented")
+async def test_create_course(artemis_session: ArtemisSession, test_course_generator):
+    new_course = await test_course_generator()
+    assert await artemis_session.course.get_course(new_course["id"])
 
 
 @pytest.mark.asyncio
