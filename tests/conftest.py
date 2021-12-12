@@ -68,6 +68,8 @@ async def test_course_generator(artemis_session: ArtemisSession):
         counter += 1
 
         new_course = await artemis_session.course.create_course(course)
+        if "shortName" in new_course:
+            assert new_course["shortName"] == course["shortName"]
         _temp_courses += [new_course]
         return new_course
 
