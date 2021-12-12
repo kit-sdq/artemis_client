@@ -1,4 +1,4 @@
-from datetime import datetime
+from artemis_client.utils.serialize import deserialize_datetime
 from .manager import ArtemisManager
 
 
@@ -8,6 +8,4 @@ class TimeManager(ArtemisManager):
     async def time(self):
         resp = await self._session.get_endpoint("/time")
         text: str = await resp.text()
-        text = text[1:text.rindex(".")]
-
-        return datetime.strptime(text, "%Y-%m-%dT%H:%M:%S")
+        return deserialize_datetime(text[1:-1])

@@ -5,6 +5,7 @@ import logging
 from aiohttp.client_reqrep import ClientResponse
 
 from artemis_client.api import LoginVM
+from artemis_client.utils.serialize import dumps
 from artemis_client.utils.url import sanitize_url
 from .configuration import get_value
 
@@ -50,7 +51,7 @@ class ArtemisSession:
         """See :class:`~artemis_client.managers.SubmissionManager`"""
 
     async def __aenter__(self, *_):
-        self._session = ClientSession(self._url, raise_for_status=True)
+        self._session = ClientSession(self._url, raise_for_status=True, json_serialize=dumps)
         if self._token is None:
             self._token = await self._login()
         self._session.headers[AUTHORIZATION_HEADER] = self._token

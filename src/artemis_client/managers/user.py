@@ -3,6 +3,7 @@ from aiohttp.client_reqrep import ClientResponse
 from artemis_client.api import ManagedUserVM, Role, SearchUserDTO, UserDTO
 from artemis_client.managers.manager import ArtemisManager
 from artemis_client.utils.paginate import paginate_json
+from artemis_client.utils.serialize import loads
 
 
 class UserManager(ArtemisManager):
@@ -50,12 +51,12 @@ class UserManager(ArtemisManager):
 
     async def get_authorities(self) -> List[Role]:
         resp = await self._session.get_api_endpoint("/users/authorities")
-        roles = await resp.json()
+        roles = await resp.json(loads=loads)
         return roles
 
     async def get_user(self, login: str) -> UserDTO:
         resp = await self._session.get_api_endpoint("/users/" + login)
-        user = await resp.json()
+        user = await resp.json(loads=loads)
         return user
 
     async def delete_user(self, login: str) -> ClientResponse:

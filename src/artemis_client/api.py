@@ -1,4 +1,6 @@
 from typing import Any, TypedDict, List, Literal, Union
+from datetime import datetime
+
 
 Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_EDITOR"]
 
@@ -10,6 +12,7 @@ Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_ED
 # total = False.
 
 # Some types are not modeled out completely. In this case Any is used.
+
 
 class LoginVM(TypedDict):
     username: str
@@ -34,7 +37,7 @@ class SearchUserDTO(SearchUserDTORequired, total=False):
     visibleRegistrationNumber: str
     imageUrl: str
     groups: List[str]
-    lastNotificationRead: str
+    lastNotificationRead: datetime
 
 
 class UserDTORequired(BaseEntity):
@@ -46,9 +49,9 @@ class UserDTORequired(BaseEntity):
     activated: bool
     langKey: str
     createdBy: str
-    createdDate: str
+    createdDate: datetime
     lastModifiedBy: str
-    lastModifiedDate: str
+    lastModifiedDate: datetime
     authorities: List[Role]
 
 
@@ -56,7 +59,7 @@ class UserDTO(UserDTORequired, total=False):
     visibleRegistrationNumber: str
     imageUrl: str
     groups: List[str]
-    lastNotificationRead: str
+    lastNotificationRead: datetime
 
 
 class ManagedUserVM(TypedDict):
@@ -107,14 +110,14 @@ class User(Account, BaseEntity, total=False):
     groups: List[str]
     organizations: List[Organization]
     createdBy: str
-    createdDate: str
+    createdDate: datetime
     lastModifiedBy: str
-    lastModifiedDate: str
-    lastNotificationRead: str
+    lastModifiedDate: datetime
+    lastNotificationRead: datetime
     visibleRegistrationNumber: str
     password: str
     participantIdentifier: str
-    resetDate: str
+    resetDate: datetime
 
 
 class Course(BaseEntity, total=False):
@@ -137,8 +140,8 @@ class Course(BaseEntity, total=False):
     requestMoreFeedbackEnabled: bool
     complaintsEnabled: bool
     semester: str
-    endDate: str
-    startDate: str
+    endDate: datetime
+    startDate: datetime
     maxPoints: int
 
 
@@ -165,9 +168,9 @@ class Team(BaseEntity, total=False):
     owner: User
 
     createdBy: str
-    createdDate: str
+    createdDate: datetime
     lastModifiedBy: str
-    lastModifiedDate: str
+    lastModifiedDate: datetime
 
 
 ExerciseCategory = str
@@ -262,7 +265,7 @@ AssessmentType = Literal["AUTOMATIC", "SEMI_AUTOMATIC", "MANUAL"]
 
 class Result(BaseEntity, total=False):
     resultString: str
-    completionDate: str
+    completionDate: datetime
     successful: bool
     hasFeedback: bool
     score: float
@@ -279,7 +282,7 @@ class Result(BaseEntity, total=False):
 
 class Submission(BaseEntity, total=False):
     submitted: bool
-    submissionDate: str
+    submissionDate: datetime
     type: SubmissionType
     exampleSubmission: bool
     submissionExerciseType: SubmissionExerciseType
@@ -307,7 +310,7 @@ class Participation(BaseEntity, total=False):
     type: ParticipationType
     # Todo: Better typing. Currently the subclasses only are differentiated by this value
     initializationState: InitializationState
-    initializationDate: str
+    initializationDate: datetime
     presentationScore: int
     results: List[Result]
     submissions: List[Submission]
@@ -410,7 +413,7 @@ LectureUnitType = Literal[
 
 class LectureUnit(BaseEntity, total=False):
     name: str
-    releaseDate: str
+    releaseDate: datetime
     lecture: "Lecture"
     learningGoals: List[LearningGoal]
     type: LectureUnitType
@@ -424,9 +427,9 @@ class AttachmentUnit(LectureUnit, total=False):
 class Attachment(BaseEntity, total=False):
     name: str
     link: str
-    releaseDate: str
+    releaseDate: datetime
     version: int
-    uploadDate: str
+    uploadDate: datetime
     attachmentType: AttachmentType
     lecture: "Lecture"
     exercise: "Exercise"
@@ -436,8 +439,8 @@ class Attachment(BaseEntity, total=False):
 class Lecture(BaseEntity, total=False):
     title: str
     description: str
-    startDate: str
-    endDate: str
+    startDate: datetime
+    endDate: datetime
     attachments: List[Attachment]
     posts: List[Any]  # TODO
     lectureUnits: List[LectureUnit]
@@ -472,9 +475,9 @@ class AbstractExercise(BaseEntity, total=False):
     gradingInstructions: str
     title: str
     shortName: str
-    releaseDate: str
-    dueDate: str
-    assessmentDueDate: str
+    releaseDate: datetime
+    dueDate: datetime
+    assessmentDueDate: datetime
     maxPoints: float
     bonusPoints: float
     assessmentType: AssessmentType
@@ -551,7 +554,7 @@ class ProgrammingExercise(AbstractExercise, total=False):
     auxiliaryRepositories: List[Any]
     submissionPolicy: Any
 
-    buildAndTestStudentSubmissionsAfterDueDate: str
+    buildAndTestStudentSubmissionsAfterDueDate: datetime
     testCasesChanged: bool
 
     projectType: ProjectType
@@ -605,8 +608,8 @@ class QuizExercise(AbstractExercise, total=False):
     quizQuestions: List[Any]  # ToDo
     status: QuizStatus
 
-    adjustedDueDate: str
-    adjustedReleaseDate: str
+    adjustedDueDate: datetime
+    adjustedReleaseDate: datetime
     ended: bool
     started: bool
 
@@ -642,7 +645,7 @@ class StudentExam(BaseEntity, total=False):
     submitted: bool
     started: bool
     testRun: bool
-    submissionDate: str
+    submissionDate: datetime
     user: User
     exam: "Exam"
     exercises: List[Exercise]
@@ -653,10 +656,10 @@ class StudentExam(BaseEntity, total=False):
 
 class Exam(BaseEntity, total=False):
     title: str
-    visibleDate: str
-    startDate: str
-    endDate: str
-    publishResultsDate: str
+    visibleDate: datetime
+    startDate: datetime
+    endDate: datetime
+    publishResultsDate: datetime
     examStudentReviewStart: str
     examStudentReviewEnd: str
     gracePeriod: int
@@ -680,4 +683,4 @@ class Exam(BaseEntity, total=False):
     numberOfRegisteredUsers: int
 
     examArchivePath: str
-    latestIndividualEndDate: str
+    latestIndividualEndDate: datetime

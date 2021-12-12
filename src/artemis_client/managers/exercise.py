@@ -1,6 +1,7 @@
 from typing import AsyncGenerator
 from artemis_client.api import StudentParticipation
 from artemis_client.managers.manager import ArtemisManager
+from artemis_client.utils.serialize import loads
 
 
 class ExerciseManager(ArtemisManager):
@@ -10,6 +11,6 @@ class ExerciseManager(ArtemisManager):
             "withLatestResult": "true" if with_latest_results else "false"
         }
         resp = await self._session.get_api_endpoint(f"/exercises/{exercise_id}/participations", params=params)
-        participations = await resp.json()
+        participations = await resp.json(loads=loads)
         for participation in participations:
             yield participation
