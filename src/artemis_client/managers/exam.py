@@ -1,4 +1,4 @@
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List
 from artemis_client.api import Exam, ExerciseGroup
 from artemis_client.managers.manager import ArtemisManager
 from artemis_client.utils.serialize import loads
@@ -8,7 +8,7 @@ class ExamManager(ArtemisManager):
 
     async def get_exams(self, course_id: int) -> AsyncGenerator[Exam, None]:
         resp = await self._session.get_api_endpoint(f"/courses/{course_id}/exams")
-        exams = await resp.json(loads=loads)
+        exams: List[Exam] = await resp.json(loads=loads)
         for exam in exams:
             yield exam
 
