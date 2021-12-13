@@ -5,9 +5,7 @@
 
 ## Installation
 ```bash
-git clone https://git.scc.kit.edu/i43/lehre/programmieren/artemis/ArtemisTests
-cd ArtemisTests
-pip install .
+pip install git+https://github.com/kit-sdq/artemis_client@main
 ```
 
 ## Configuration
