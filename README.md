@@ -1,7 +1,8 @@
 # Artemis Client
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
+[![GitHub issues](https://img.shields.io/github/issues/kit-sdq/artemis_client.svg?style=square)](https://github.com/kit-sdq/artemis_client/issues)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=square)](https://github.com/kit-sdq/artemis_client/blob/main/LICENSE.md)
 
 ## Installation
 ```bash
