@@ -118,6 +118,7 @@ class User(Account, BaseEntity, total=False):
     password: str
     participantIdentifier: str
     resetDate: datetime
+    internal: bool
 
 
 class Course(BaseEntity, total=False):
