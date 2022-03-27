@@ -296,6 +296,11 @@ class Submission(BaseEntity, total=False):
     participation: "Participation"
     isSynced: bool
 
+class ProgrammingSubmission(Submission, total=False):
+    commitHash: str
+    buildFailed: bool
+    buildArtifact: bool
+    # SubmissionExerciseType must be programming
 
 ParticipationType = Literal["student", "programming", "template", "solution"]
 
