@@ -252,7 +252,7 @@ class Feedback(BaseEntity, total=False):
     text: str
     detailText: str
     reference: str
-    credits: int
+    credits: float
     type: FeedbackType
     result: "Result"
     positive: bool
