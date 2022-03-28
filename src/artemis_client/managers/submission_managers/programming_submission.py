@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, AsyncGenerator
 from aiohttp.client_reqrep import ClientResponse
 from artemis_client.api import Participation, ProgrammingSubmission, SubmissionType
 from artemis_client.managers import ArtemisManager
@@ -29,18 +29,19 @@ class ProgrammingSubmissionManager(ArtemisManager):
         filter_submitted_only: bool = False,
         filter_assessed_by_tutor: bool = False,
         correction_round: int = 0,
-    ) -> List[ProgrammingSubmission]:
+    ) -> AsyncGenerator[ProgrammingSubmission, None]:
         params = {
-            "submittedOnly": filter_submitted_only,
-            "assessedByTutor": filter_assessed_by_tutor,
-            "correction-round": correction_round,
+            "submittedOnly": str(filter_submitted_only).lower(),
+            "assessedByTutor": str(filter_assessed_by_tutor).lower(),
+            "correction-round": str(correction_round),
         }
         resp = await self._session.get_api_endpoint(
             f"/exercises/{exercise_id}/programming-submissions",
             params=params
         )
-        jdict = await resp.json(loads=loads)
-        return jdict
+        jdict: List[ProgrammingSubmission] = await resp.json(loads=loads)
+        for submission in jdict:
+            yield submission
 
     async def lock_and_get_submission(
         self, submission_id: int, correction_round: int = 0
@@ -53,7 +54,7 @@ class ProgrammingSubmissionManager(ArtemisManager):
         :param      correction_round:  The correction round, defaults to 0
         :type       correction_round:  int
         """
-        params = {"correction-round": correction_round}
+        params = {"correction-round": str(correction_round)}
         resp = await self._session.get_api_endpoint(
             f"/programming-submissions/{submission_id}/lock", params=params
         )

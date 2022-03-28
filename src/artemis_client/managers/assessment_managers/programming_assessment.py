@@ -20,7 +20,7 @@ class ProgrammingAssessmentManager(ArtemisManager):
         :returns:   The client response.
         :rtype:     ClientResponse
         """
-        params = {"submit": submit}
+        params = {"submit": str(submit).lower()}
         return await self._session.put_api_endpoint(
             f"/participations/{participation_id}/manual-results",
             json=result,
