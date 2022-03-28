@@ -293,7 +293,7 @@ class Submission(BaseEntity, total=False):
     submissionExerciseType: SubmissionExerciseType
     durationInMinutes: int
     results: List[Result]
-    participation: "Participation"
+    participation: "StudentParticipation"
     isSynced: bool
 
 class ProgrammingSubmission(Submission, total=False):
