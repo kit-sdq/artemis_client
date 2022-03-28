@@ -11,6 +11,7 @@ from artemis_client.utils.url import sanitize_url
 from .configuration import get_value
 
 AUTHORIZATION_HEADER = "authorization"
+MAX_LOGIN_TRIES = 10
 
 
 class ArtemisSession:
@@ -139,9 +140,8 @@ class ArtemisSession:
         try:
             return await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
         except ClientResponseError as e:
-            if e.status == 401 and tries < 10:
+            if e.status == 401 and tries < MAX_LOGIN_TRIES:
                 # Attempt to log in
-                print("logging in")
                 self._token = await self._login()
                 self._get_session().headers[AUTHORIZATION_HEADER] = self._token
                 # Try again
