@@ -1,3 +1,4 @@
+from typing import List
 from aiohttp.client_reqrep import ClientResponse
 from artemis_client.api import Participation, ProgrammingSubmission, SubmissionType
 from artemis_client.managers import ArtemisManager
@@ -21,6 +22,25 @@ class ProgrammingSubmissionManager(ArtemisManager):
             f"/programming-submissions/{participation['id']}/trigger-build",
             params=params,
         )
+
+    async def get_submissions(
+        self,
+        exercise_id: int,
+        filter_submitted_only: bool = False,
+        filter_assessed_by_tutor: bool = False,
+        correction_round: int = 0,
+    ) -> List[ProgrammingSubmission]:
+        params = {
+            "submittedOnly": filter_submitted_only,
+            "assessedByTutor": filter_assessed_by_tutor,
+            "correction-round": correction_round,
+        }
+        resp = await self._session.get_api_endpoint(
+            f"/exercises/{exercise_id}/programming-submissions",
+            params=params
+        )
+        jdict = await resp.json(loads=loads)
+        return jdict
 
     async def lock_and_get_submission(
         self, submission_id: int, correction_round: int = 0
