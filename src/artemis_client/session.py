@@ -3,6 +3,7 @@ from typing import Optional
 import logging
 
 from aiohttp.client_reqrep import ClientResponse
+from aiohttp.client_exceptions import ClientResponseError
 
 from artemis_client.api import LoginVM
 from artemis_client.utils.serialize import dumps
@@ -54,98 +55,59 @@ class ArtemisSession:
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url, raise_for_status=True, json_serialize=dumps)
-        if self._token is None:
-            self._token = await self._login()
-        self._session.headers[AUTHORIZATION_HEADER] = self._token
         return self
 
     async def __aexit__(self, *_):
         await self._get_session().close()
         self._session = None
 
-    async def _login(self) -> str:
-        resp = await self.post_api_endpoint("/authenticate", json=self._login_vm)
-        if resp.ok:
-            logging.debug(f"logged in to {self._url}")
-            return resp.headers[AUTHORIZATION_HEADER]
-        else:
-            raise ConnectionError(f"could not login to {self._url}")
-
     ###################################
 
     # Query ARTEMIS endpoints
 
     async def get_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().get(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("get", endpoint, **kwargs)
 
     async def post_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().post(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("post", endpoint, **kwargs)
 
     async def put_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().put(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("put", endpoint, **kwargs)
 
     async def delete_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().delete(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("delete", endpoint, **kwargs)
 
     async def head_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().head(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("head", endpoint, **kwargs)
 
     async def options_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().options(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("options", endpoint, **kwargs)
 
     async def patch_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().patch(
-            self._get_endpoint_url(endpoint), **kwargs
-        )
+        return await self._request_endpoint("patch", endpoint, **kwargs)
 
     # Query Artemis /api endpoints
 
     async def get_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().get(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("get", api_endpoint, **kwargs)
 
     async def post_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().post(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("post", api_endpoint, **kwargs)
 
     async def put_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().put(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("put", api_endpoint, **kwargs)
 
     async def delete_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().delete(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("delete", api_endpoint, **kwargs)
 
     async def head_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().head(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("head", api_endpoint, **kwargs)
 
     async def options_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().options(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("options", api_endpoint, **kwargs)
 
     async def patch_api_endpoint(self, api_endpoint: str, **kwargs) -> ClientResponse:
-        return await self._get_session().patch(
-            self._get_api_endpoint_url(api_endpoint), **kwargs
-        )
+        return await self._request_api_endpoint("patch", api_endpoint, **kwargs)
 
     ###################################
 
@@ -157,9 +119,6 @@ class ArtemisSession:
     def _get_endpoint_url(self, endpoint: str) -> str:
         return endpoint
 
-    def _get_api_endpoint_url(self, endpoint: str = "") -> str:
-        return self._get_endpoint_url("/api" + endpoint)
-
     def _get_session(self) -> ClientSession:
         if self._session is None:
             raise RuntimeError(
@@ -167,3 +126,28 @@ class ArtemisSession:
             )
 
         return self._session
+
+    async def _login(self) -> str:
+        resp = await self._get_session().post(self._get_endpoint_url("/api/authenticate"), json=self._login_vm)
+        if resp.ok:
+            logging.debug(f"logged in to {self._url}")
+            return resp.headers[AUTHORIZATION_HEADER]
+        else:
+            raise ConnectionError(f"could not login to {self._url}")
+
+    async def _request_endpoint(self, method: str, endpoint: str, tries=0, **kwargs) -> ClientResponse:
+        try:
+            return await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
+        except ClientResponseError as e:
+            if e.status == 401 and tries < 10:
+                # Attempt to log in
+                print("logging in")
+                self._token = await self._login()
+                self._get_session().headers[AUTHORIZATION_HEADER] = self._token
+                # Try again
+                return await self._request_endpoint(method, endpoint, tries + 1, **kwargs)
+            else:
+                raise e
+
+    async def _request_api_endpoint(self, method: str, api_endpoint: str, **kwargs) -> ClientResponse:
+        return await self._request_endpoint(method, "/api" + api_endpoint, **kwargs)
