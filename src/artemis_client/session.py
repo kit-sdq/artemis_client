@@ -61,6 +61,7 @@ class ArtemisSession:
 
     async def __aexit__(self, *_):
         await self._get_session().close()
+        self._session = None
 
     async def _login(self) -> str:
         resp = await self.post_api_endpoint("/authenticate", json=self._login_vm)
