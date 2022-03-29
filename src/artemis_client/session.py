@@ -54,6 +54,8 @@ class ArtemisSession:
         self.assessment = artemis_client.managers.AssessmentManager(self)
         """See :class:`~artemis_client.managers.AssessmentManager`"""
 
+    ###################################
+
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url, raise_for_status=True, json_serialize=dumps)
         return self
@@ -64,7 +66,7 @@ class ArtemisSession:
 
     ###################################
 
-    # Query ARTEMIS endpoints
+    # Query Artemis endpoints
 
     async def get_endpoint(self, endpoint: str, **kwargs) -> ClientResponse:
         return await self._request_endpoint("get", endpoint, **kwargs)
