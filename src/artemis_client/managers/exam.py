@@ -12,12 +12,16 @@ class ExamManager(ArtemisManager):
         for exam in exams:
             yield exam
 
-    async def get_exam_with_exercise_groups_and_exercises(self, course_id: int, exam_id: int) -> Exam:
-        resp = await self._session.get_api_endpoint(f"/courses/{course_id}/exams/{exam_id}/exam-for-assessment-dashboard")
+    async def get_exam(self, course_id: int, exam_id: int, with_students = False, with_exercise_groups=False) -> Exam:
+        params = {
+            "withStudents": str(with_students).lower(),
+            "withExerciseGroups": str(with_exercise_groups).lower()
+        }
+        resp = await self._session.get_api_endpoint(f"/courses/{course_id}/exams/{exam_id}", params=params)
         return await resp.json(loads=loads)
 
     async def get_exercise_groups(self, course_id: int, exam_id: int) -> AsyncGenerator[ExerciseGroup, None]:
-        exam = await self.get_exam_with_exercise_groups_and_exercises(course_id, exam_id)
+        exam = await self.get_exam(course_id, exam_id, with_exercise_groups=True)
         if "exerciseGroups" not in exam:
             raise StopAsyncIteration
         for group in exam["exerciseGroups"]:

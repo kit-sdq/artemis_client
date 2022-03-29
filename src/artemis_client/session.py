@@ -17,7 +17,7 @@ MAX_LOGIN_TRIES = 10
 class ArtemisSession:
     """This class describes an session with the Artemis REST API.
 
-    Stores credentials and reuse TCP connections.
+    Stores credentials and reuses TCP connections.
 
     This class is based of aiohttp.ClienSession().
     All API methods allow supplying kwargs controlling the underlaying
