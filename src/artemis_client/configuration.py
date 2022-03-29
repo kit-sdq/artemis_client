@@ -22,5 +22,5 @@ def get_value(section: str, key: str) -> str:
 
     raise KeyError(f"""Configuration option for ({section}, {key}) was not found.
                    Please provide a file {CONFIG_FILE} with the section {section} and a key {key}
-                   or a environment variable {environ_key}.
+                   or an environment variable {environ_key}.
                    """)
