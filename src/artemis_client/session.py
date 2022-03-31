@@ -58,6 +58,8 @@ class ArtemisSession:
 
     async def __aenter__(self, *_):
         self._session = ClientSession(self._url, raise_for_status=True, json_serialize=dumps)
+        if self._token is not None:
+            self._get_session().headers[AUTHORIZATION_HEADER] = self._token
         return self
 
     async def __aexit__(self, *_):
@@ -131,6 +133,7 @@ class ArtemisSession:
         return self._session
 
     async def _login(self) -> str:
+        # Do not use _request_* to not catch 401 ClientResponseError
         resp = await self._get_session().post(self._get_endpoint_url("/api/authenticate"), json=self._login_vm)
         if resp.ok:
             logging.debug(f"logged in to {self._url}")
