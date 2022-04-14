@@ -13,5 +13,5 @@ class ResultManager(ArtemisManager):
         return await resp.json(loads=loads)
 
     async def result_details(self, result_id: int, participation_id: int) -> List[Feedback]:
-        resp = await self._session.get_api_endpoint(f"participations/{participation_id}/results/{result_id}/details")
+        resp = await self._session.get_api_endpoint(f"/participations/{participation_id}/results/{result_id}/details")
         return await resp.json(loads=loads)
