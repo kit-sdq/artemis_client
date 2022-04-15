@@ -12,6 +12,7 @@ from .configuration import get_value
 
 AUTHORIZATION_HEADER = "authorization"
 MAX_LOGIN_TRIES = 10
+LOG = logging.getLogger("ArtemisSession")
 
 
 class ArtemisSession:
@@ -138,22 +139,25 @@ class ArtemisSession:
         # Do not use _request_* to not catch 401 ClientResponseError
         resp = await self._get_session().post(self._get_endpoint_url("/api/authenticate"), json=self._login_vm)
         if resp.ok:
-            logging.debug(f"logged in to {self._url}")
+            LOG.debug(f"logged in to {self._url}")
             return resp.headers[AUTHORIZATION_HEADER]
         else:
             raise ConnectionError(f"could not login to {self._url}")
 
     async def _request_endpoint(self, method: str, endpoint: str, tries=0, **kwargs) -> ClientResponse:
+        LOG.debug(f"{method.upper()} {endpoint}")
         try:
             return await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
         except ClientResponseError as e:
             if e.status == 401 and tries < MAX_LOGIN_TRIES:
                 # Attempt to log in
+                LOG.debug(f"attempt logging in as {self._login_vm['username']}...")
                 self._token = await self._login()
                 self._get_session().headers[AUTHORIZATION_HEADER] = self._token
                 # Try again
                 return await self._request_endpoint(method, endpoint, tries + 1, **kwargs)
             else:
+                LOG.warn(e)
                 raise e
 
     async def _request_api_endpoint(self, method: str, api_endpoint: str, **kwargs) -> ClientResponse:
