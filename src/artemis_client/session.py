@@ -13,6 +13,7 @@ from .configuration import get_value
 AUTHORIZATION_HEADER = "authorization"
 MAX_LOGIN_TRIES = 10
 LOG = logging.getLogger("ArtemisSession")
+REQUEST_NUM = 0
 
 
 class ArtemisSession:
@@ -60,12 +61,14 @@ class ArtemisSession:
     ###################################
 
     async def __aenter__(self, *_):
+        LOG.debug("instancing new client session")
         self._session = ClientSession(self._url, raise_for_status=True, json_serialize=dumps)
         if self._token is not None:
             self._get_session().headers[AUTHORIZATION_HEADER] = self._token
         return self
 
     async def __aexit__(self, *_):
+        LOG.debug("closing client session")
         await self._get_session().close()
         self._session = None
 
@@ -145,19 +148,27 @@ class ArtemisSession:
             raise ConnectionError(f"could not login to {self._url}")
 
     async def _request_endpoint(self, method: str, endpoint: str, tries=0, **kwargs) -> ClientResponse:
-        LOG.debug(f"{method.upper()} {endpoint} {kwargs}")
+        global REQUEST_NUM
+
+        local_request_num = REQUEST_NUM
+        REQUEST_NUM = REQUEST_NUM + 1
+
+        LOG.debug(f"[{local_request_num}] ---> {method.upper()} {endpoint} {kwargs}")
         try:
-            return await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
+            resp = await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
+            LOG.debug(f"[{local_request_num}] <--- {resp.status} {resp}")
+            return resp
         except ClientResponseError as e:
             if e.status == 401 and tries < MAX_LOGIN_TRIES:
                 # Attempt to log in
+                LOG.debug(f"[{local_request_num}] <-/- {e}")
                 LOG.debug(f"attempt logging in as {self._login_vm['username']}...")
                 self._token = await self._login()
                 self._get_session().headers[AUTHORIZATION_HEADER] = self._token
                 # Try again
                 return await self._request_endpoint(method, endpoint, tries + 1, **kwargs)
             else:
-                LOG.warn(e)
+                LOG.warn(f"[{local_request_num}] <-/- {e}")
                 raise e
 
     async def _request_api_endpoint(self, method: str, api_endpoint: str, **kwargs) -> ClientResponse:
