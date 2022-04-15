@@ -145,7 +145,7 @@ class ArtemisSession:
             raise ConnectionError(f"could not login to {self._url}")
 
     async def _request_endpoint(self, method: str, endpoint: str, tries=0, **kwargs) -> ClientResponse:
-        LOG.debug(f"{method.upper()} {endpoint}")
+        LOG.debug(f"{method.upper()} {endpoint} {kwargs}")
         try:
             return await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
         except ClientResponseError as e:
