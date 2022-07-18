@@ -1,6 +1,6 @@
 from typing import AsyncGenerator, List
 from aiohttp.client_reqrep import ClientResponse
-from artemis_client.api import ManagedUserVM, Role, SearchUserDTO, UserDTO
+from artemis_client.api import ManagedUserVM, Role, SearchUserDTO, SortingOrder, UserDTO, UserPageableSearchDTO
 from artemis_client.managers.manager import ArtemisManager
 from artemis_client.utils.paginate import paginate_json
 from artemis_client.utils.serialize import loads
@@ -67,14 +67,20 @@ class UserManager(ArtemisManager):
         self,
         search_term: str = "",
         page_size: int = 50,
-        sorting_order="ASCENDING",
+        sorting_order: SortingOrder = "ASCENDING",
         sorted_column: str = "id",
     ) -> AsyncGenerator[UserDTO, None]:
         """Generates the users."""
-        params = {
+        params: UserPageableSearchDTO = {
+            "page": 0,
+            "pageSize": page_size,
             "searchTerm": search_term,
             "sortingOrder": sorting_order,
             "sortedColumn": sorted_column,
+            "authorities": "",
+            "origins": "",
+            "status": "",
+            "courseIds": "",
         }
 
         async for obj in paginate_json(

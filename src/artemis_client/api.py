@@ -42,7 +42,7 @@ class SearchUserDTO(SearchUserDTORequired, total=False):
     vcsAccessToken: str
 
 
-class UserDTORequired(BaseEntity):
+class UserDTO(BaseEntity, total=False):
     login: str
     name: str
     firstName: str
@@ -54,16 +54,13 @@ class UserDTORequired(BaseEntity):
     createdDate: datetime
     lastModifiedBy: str
     lastModifiedDate: datetime
-    authorities: List[Role]
-
-
-class UserDTO(UserDTORequired, total=False):
     visibleRegistrationNumber: str
     imageUrl: str
     groups: List[str]
     lastNotificationRead: datetime
     internal: bool
     vcsAccessToken: str
+    authorities: List[Role]
 
 
 class ManagedUserVM(TypedDict):
@@ -154,6 +151,9 @@ class Course(BaseEntity, total=False):
     complaintsEnabled: bool
     color: Optional[str]
     accuracyOfScores: int
+    maxComplaintResponseTextLimit: int
+    maxComplaintTextLimit: int
+    validStartAndEndDate: bool
 
 
 class CourseStats(TypedDict):
@@ -542,10 +542,14 @@ ProgrammingLanguage = Literal[
 ]
 
 ProjectType = Literal[
-    'MAVEN',
-    'ECLIPSE',
+    'MAVEN_MAVEN',
+    'PLAIN_MAVEN',
     'PLAIN',
     'XCODE',
+    'FACT',
+    'GCC',
+    'PLAIN_GRADLE',
+    'GRADLE_GRADLE'
 ]
 
 
@@ -576,6 +580,8 @@ class ProgrammingExercise(AbstractExercise, total=False):
     projectType: ProjectType
     isLocalSimulation: bool
     testRepositoryName: str
+    branch: str
+    testwiseCoverageEnabled: bool
 
 
 UMLDiagramType = Literal[
@@ -598,6 +604,7 @@ class ModelingExercise(AbstractExercise, total=False):
     diagramType: UMLDiagramType
     sampleSolutionModel: str
     sampleSolutionExplanation: str
+    exampleSolutionModel: str
 
 
 QuizStatus = Literal[
@@ -631,6 +638,11 @@ class QuizExercise(AbstractExercise, total=False):
 
     isActiveQuiz: bool
     isPracticeModeAvailable: bool
+
+    allowedNumberOfAttempts: int
+    quizEnded: bool
+    quizStarted: bool
+    quizMode: Literal["SYNCHRONIZED", "BATCHED", "INDIVIDUAL"]
 
 
 class TextExercise(AbstractExercise, total=False):
@@ -700,3 +712,21 @@ class Exam(BaseEntity, total=False):
 
     examArchivePath: str
     latestIndividualEndDate: datetime
+
+
+SortingOrder = Literal["ASCENDING", "DESCENDING"]
+
+
+class PageableSearchDTO(TypedDict):
+    page: int
+    pageSize: int
+    searchTerm: str
+    sortingOrder: SortingOrder
+    sortedColumn: str
+
+
+class UserPageableSearchDTO(PageableSearchDTO):
+    authorities: str
+    origins: str
+    status: str
+    courseIds: str
