@@ -7,6 +7,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 log_cli = true
 log_cli_level = "CRITICAL"
 log_cli_format = "%(message)s"

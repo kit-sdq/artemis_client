@@ -168,7 +168,7 @@ class ArtemisSession:
                 # Try again
                 return await self._request_endpoint(method, endpoint, tries + 1, **kwargs)
             else:
-                LOG.warn(f"[{local_request_num}] <-/- {e}")
+                LOG.warning(f"[{local_request_num}] <-/- {e}")
                 raise e
 
     async def _request_api_endpoint(self, method: str, api_endpoint: str, **kwargs) -> ClientResponse:

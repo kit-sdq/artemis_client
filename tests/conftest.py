@@ -15,7 +15,9 @@ from artemis_client.session import ArtemisSession
 # Make sure the event loop is reused: Allow reusing artemis session
 @pytest.fixture(scope="session")
 def event_loop():
-    return asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture(scope="session", autouse=True)
