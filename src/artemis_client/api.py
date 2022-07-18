@@ -38,6 +38,8 @@ class SearchUserDTO(SearchUserDTORequired, total=False):
     imageUrl: str
     groups: List[str]
     lastNotificationRead: datetime
+    internal: bool
+    vcsAccessToken: str
 
 
 class UserDTORequired(BaseEntity):
@@ -60,6 +62,8 @@ class UserDTO(UserDTORequired, total=False):
     imageUrl: str
     groups: List[str]
     lastNotificationRead: datetime
+    internal: bool
+    vcsAccessToken: str
 
 
 class ManagedUserVM(TypedDict):
@@ -104,6 +108,8 @@ class Account(TypedDict, total=False):
     langKey: str
     imageUrl: str
     guidedTourSettings: List[GuidedTourSetting]
+    internal: bool
+    vcsAccessToken: str
 
 
 class User(Account, BaseEntity, total=False):
@@ -118,7 +124,6 @@ class User(Account, BaseEntity, total=False):
     password: str
     participantIdentifier: str
     resetDate: datetime
-    internal: bool
 
 
 class Course(BaseEntity, total=False):
@@ -520,6 +525,7 @@ class AbstractExercise(BaseEntity, total=False):
     studentAssignedTeamIdComputed: bool
     teamMode: bool
     visibleToStudents: bool
+    exampleSolutionPublished: bool
 
 
 ProgrammingLanguage = Literal[
@@ -630,7 +636,7 @@ class QuizExercise(AbstractExercise, total=False):
 class TextExercise(AbstractExercise, total=False):
     exerciseType: Literal["TEXT"]
 
-    sampleSolution: str
+    exampleSolution: str
     automaticAssessmentEnabled: bool
 
 
@@ -638,7 +644,7 @@ class FileUploadExercise(AbstractExercise, total=False):
     exerciseType: Literal["FILE_UPLOAD"]
 
     filePattern: str
-    sampleSolution: str
+    exampleSolution: str
 
 
 Exercise = Union[ProgrammingExercise, ModelingExercise, QuizExercise, TextExercise, FileUploadExercise]
