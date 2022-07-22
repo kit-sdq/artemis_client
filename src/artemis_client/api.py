@@ -478,8 +478,8 @@ class GradingCriterion(BaseEntity):
 class ExerciseGroup(BaseEntity, total=False):
     title: str
     isMandatory: bool
-    exam: Any  # todo
-    exercises: List["Exercise"]
+    exam: "Exam"
+    exercises: Any  # TODO
 
 
 ExerciseType = Literal["programming", "modeling", "quiz", "text", "file-upload"]
@@ -686,7 +686,7 @@ class StudentExam(BaseEntity, total=False):
     exam: "Exam"
     exercises: List[Exercise]
     examSessions: List[ExamSession]
-
+    startedDate: datetime
     ended: bool
 
 
@@ -720,6 +720,11 @@ class Exam(BaseEntity, total=False):
 
     examArchivePath: str
     latestIndividualEndDate: datetime
+    monitoring: bool
+    started: bool
+    testExam: bool
+    visibleToStudents: bool
+    workingTime: int
 
 
 SortingOrder = Literal["ASCENDING", "DESCENDING"]

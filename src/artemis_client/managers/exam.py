@@ -1,5 +1,5 @@
 from typing import AsyncGenerator, List
-from artemis_client.api import Exam, ExerciseGroup
+from artemis_client.api import Exam, ExerciseGroup, StudentExam
 from artemis_client.managers.manager import ArtemisManager
 from artemis_client.utils.serialize import loads
 
@@ -44,3 +44,28 @@ class ExamManager(ArtemisManager):
             raise StopAsyncIteration
         for group in exam["exerciseGroups"]:
             yield group
+
+    async def get_student_exams(
+        self, course_id: int, exam_id: int
+    ) -> AsyncGenerator[StudentExam, None]:
+        """
+        Returns the student exams for a exam.
+        """
+        resp = await self._session.get_api_endpoint(
+            f"/courses/{course_id}/exams/{exam_id}/student-exams"
+        )
+        exams: List[StudentExam] = await resp.json(loads=loads)
+        for exam in exams:
+            yield exam
+
+    async def toggle_to_submitted(
+        self, course_id: int, exam_id: int, student_exam_id: int
+    ) -> StudentExam:
+        """
+        Toggles a student exams to submitted. This is needed to assess a student exam that was not handed in explicitly.
+        Returns the updated student exam with the submission date set.
+        """
+        resp = await self._session.put_api_endpoint(
+            f"/courses/{course_id}/exams/{exam_id}/student-exams/{student_exam_id}/toggle-to-submitted"
+        )
+        return await resp.json(loads=loads)
