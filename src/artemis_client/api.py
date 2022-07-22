@@ -302,11 +302,13 @@ class Submission(BaseEntity, total=False):
     participation: "StudentParticipation"
     isSynced: bool
 
+
 class ProgrammingSubmission(Submission, total=False):
     commitHash: str
     buildFailed: bool
     buildArtifact: bool
     # SubmissionExerciseType must be programming
+
 
 ParticipationType = Literal["student", "programming", "template", "solution"]
 
@@ -529,27 +531,27 @@ class AbstractExercise(BaseEntity, total=False):
 
 
 ProgrammingLanguage = Literal[
-    'JAVA',
-    'PYTHON',
-    'C',
-    'HASKELL',
-    'KOTLIN',
-    'VHDL',
-    'ASSEMBLER',
-    'SWIFT',
-    'OCAML',
-    'EMPTY',
+    "JAVA",
+    "PYTHON",
+    "C",
+    "HASKELL",
+    "KOTLIN",
+    "VHDL",
+    "ASSEMBLER",
+    "SWIFT",
+    "OCAML",
+    "EMPTY",
 ]
 
 ProjectType = Literal[
-    'MAVEN_MAVEN',
-    'PLAIN_MAVEN',
-    'PLAIN',
-    'XCODE',
-    'FACT',
-    'GCC',
-    'PLAIN_GRADLE',
-    'GRADLE_GRADLE'
+    "MAVEN_MAVEN",
+    "PLAIN_MAVEN",
+    "PLAIN",
+    "XCODE",
+    "FACT",
+    "GCC",
+    "PLAIN_GRADLE",
+    "GRADLE_GRADLE",
 ]
 
 
@@ -585,16 +587,16 @@ class ProgrammingExercise(AbstractExercise, total=False):
 
 
 UMLDiagramType = Literal[
-    'ClassDiagram',
-    'ObjectDiagram',
-    'ActivityDiagram',
-    'UseCaseDiagram',
-    'CommunicationDiagram',
-    'ComponentDiagram',
-    'DeploymentDiagram',
-    'PetriNet',
-    'SyntaxTree',
-    'Flowchart',
+    "ClassDiagram",
+    "ObjectDiagram",
+    "ActivityDiagram",
+    "UseCaseDiagram",
+    "CommunicationDiagram",
+    "ComponentDiagram",
+    "DeploymentDiagram",
+    "PetriNet",
+    "SyntaxTree",
+    "Flowchart",
 ]
 
 
@@ -659,7 +661,13 @@ class FileUploadExercise(AbstractExercise, total=False):
     exampleSolution: str
 
 
-Exercise = Union[ProgrammingExercise, ModelingExercise, QuizExercise, TextExercise, FileUploadExercise]
+Exercise = Union[
+    ProgrammingExercise,
+    ModelingExercise,
+    QuizExercise,
+    TextExercise,
+    FileUploadExercise,
+]
 
 
 class ExamSession(BaseEntity):

@@ -12,7 +12,7 @@ class ExamManager(ArtemisManager):
         for exam in exams:
             yield exam
 
-    async def get_exam(self, course_id: int, exam_id: int, with_students = False, with_exercise_groups=False) -> Exam:
+    async def get_exam(self, course_id: int, exam_id: int, with_students=False, with_exercise_groups=False) -> Exam:
         params = {
             "withStudents": str(with_students).lower(),
             "withExerciseGroups": str(with_exercise_groups).lower()

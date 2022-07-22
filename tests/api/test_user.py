@@ -25,7 +25,7 @@ async def test_get_user(artemis_session: ArtemisSession):
     user = await artemis_session.user.get_user(artemis_session.get_username())
     assert user
     check_type("user", user, UserDTO)
-    assert user["login"] == artemis_session.get_username()
+    assert "login" in user and user["login"] == artemis_session.get_username()
 
 
 @pytest.mark.asyncio
@@ -57,7 +57,7 @@ async def test_create_delete_user(artemis_session: ArtemisSession):
 async def test_get_users(artemis_session: ArtemisSession):
     async for user in artemis_session.user.get_users():
         check_type("user", user, UserDTO)
-        if user["login"] == artemis_session.get_username():
+        if "login" in user and user["login"] == artemis_session.get_username():
             break
     else:
         pytest.fail()
