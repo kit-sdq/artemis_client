@@ -16,7 +16,7 @@ from artemis_client.session import ArtemisSession
 @pytest.mark.asyncio
 async def get_authorities(artemis_session: ArtemisSession):
     roles = await artemis_session.user.get_authorities()
-    check_type("roles", roles, List[Role])
+    check_type("List[Role]", roles, List[Role])
     assert "ROLE_ADMIN" in roles
 
 
@@ -24,7 +24,7 @@ async def get_authorities(artemis_session: ArtemisSession):
 async def test_get_user(artemis_session: ArtemisSession):
     user = await artemis_session.user.get_user(artemis_session.get_username())
     assert user
-    check_type("user", user, UserDTO)
+    check_type("UserDTO", user, UserDTO)
     assert "login" in user and user["login"] == artemis_session.get_username()
 
 
@@ -56,7 +56,7 @@ async def test_create_delete_user(artemis_session: ArtemisSession):
 @pytest.mark.asyncio
 async def test_get_users(artemis_session: ArtemisSession):
     async for user in artemis_session.user.get_users():
-        check_type("user", user, UserDTO)
+        check_type("UserDTO", user, UserDTO)
         if "login" in user and user["login"] == artemis_session.get_username():
             break
     else:
@@ -66,7 +66,7 @@ async def test_get_users(artemis_session: ArtemisSession):
 @pytest.mark.asyncio
 async def test_search_users(artemis_session: ArtemisSession):
     async for user in artemis_session.user.search_users(artemis_session.get_username()):
-        check_type("user", user, SearchUserDTO)
+        check_type("SearchUserDTO", user, SearchUserDTO)
         if user["login"] == artemis_session.get_username():
             break
     else:
