@@ -20,22 +20,17 @@ Values found in environment variables are preferred over configuration files. Th
 
 
 ## Setting up a development environment
+
+This project uses [poetry](https://python-poetry.org/):
 ```bash
-# OPTIONAL: Create a venv
-python -m venv env
-source env/bin/activate # Unix
-# .\env\Scripts\activate  # Windows
-
-
-# Install dev dependencies
-pip install --upgrade --force-reinstall -r requirements.txt
+poetry install
 ```
 
 
 ### Testing
 
 ```bash
-tox  # thats all
+poetry run tox  # thats all
 ```
 
 ### Folder layout
@@ -45,7 +40,7 @@ This project uses the "Tests outside application code" layout presented [here](h
 You can build the documentation using sphinx:
 
 ```bash
-tox -e docs
+poetry run tox -e docs
 ```
 
 The docs can then be found in `.tox/docs_out`
