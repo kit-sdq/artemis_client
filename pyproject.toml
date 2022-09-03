@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "artemis_client"
-version = "0.0.2"
+version = "1.0.0"
 description = "A client for ls1tum/Artemis"
 authors = ["Lucas Alber <lucasd.alber@gmail.com>"]
 
