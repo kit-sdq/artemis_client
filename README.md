@@ -15,6 +15,7 @@ The client can be configured either by configuration file or by environment vari
 - Provide a file 'config.ini' in the working directory
 - Provide a file 'config.ini' in a custom directory and set ARTEMIS_CLIENT_CONFIG environment variable accordingly
 - Provide all configuration options as environment variables (SECTION_KEY)
+- Supply username and password using the `Session` constructor
 
 Values found in environment variables are preferred over configuration files. That can be used to provide credentials in a testing environment, for example.
 
