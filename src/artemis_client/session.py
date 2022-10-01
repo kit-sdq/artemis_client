@@ -127,9 +127,6 @@ class ArtemisSession:
 
     ###################################
 
-    def _get_endpoint_url(self, endpoint: str) -> str:
-        return endpoint
-
     def _get_session(self) -> ClientSession:
         if self._session is None:
             raise RuntimeError(
@@ -140,7 +137,7 @@ class ArtemisSession:
 
     async def _login(self) -> str:
         # Do not use _request_* to not catch 401 ClientResponseError
-        resp = await self._get_session().post(self._get_endpoint_url("/api/authenticate"), json=self._login_vm)
+        resp = await self._get_session().post("/api/authenticate", json=self._login_vm)
         if resp.ok:
             LOG.debug(f"logged in to {self._url}")
             return resp.headers[AUTHORIZATION_HEADER]
@@ -155,7 +152,7 @@ class ArtemisSession:
 
         LOG.debug(f"[{local_request_num}] ---> {method.upper()} {endpoint} {kwargs}")
         try:
-            resp = await self._get_session().request(method, self._get_endpoint_url(endpoint), **kwargs)
+            resp = await self._get_session().request(method, endpoint, **kwargs)
             LOG.debug(f"[{local_request_num}] <--- {resp.status} {resp}")
             return resp
         except ClientResponseError as e:
