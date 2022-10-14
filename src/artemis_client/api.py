@@ -743,3 +743,4 @@ class UserPageableSearchDTO(PageableSearchDTO):
     origins: str
     status: str
     courseIds: str
+    registrationNumbers: str

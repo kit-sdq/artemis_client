@@ -81,6 +81,7 @@ class UserManager(ArtemisManager):
             "origins": "",
             "status": "",
             "courseIds": "",
+            "registrationNumbers": ""
         }
 
         async for obj in paginate_json(
