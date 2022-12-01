@@ -60,13 +60,15 @@ async def test_get_exercises_for_course(artemis_session: ArtemisSession):
 
 @pytest.mark.asyncio
 async def test_programming_exercise_type(artemis_session: ArtemisSession):
+    found = False
     async for c in artemis_session.course.get_courses_with_stats():
         async for e in artemis_session.course.get_exercises_for_course(c["id"]):
             if "type" in e:
                 if e["type"] == "programming":
                     check_type("ProgrammingExercise", e, ProgrammingExercise)
-                    return
-    pytest.skip("No course with programming exercises found")
+                    found = True
+    if not found:
+        pytest.skip("No course with programming exercises found")
 
 
 @pytest.mark.asyncio

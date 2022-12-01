@@ -1,9 +1,12 @@
 from typing import AsyncGenerator
+import aiohttp
+from aiohttp import JsonPayload, MultipartWriter
 
 from aiohttp.client_reqrep import ClientResponse
+from multidict import CIMultiDict
 from artemis_client.api import Course, CourseWithExercises, CourseWithStats, Exercise, User
 from artemis_client.managers.manager import ArtemisManager
-from artemis_client.utils.serialize import loads
+from artemis_client.utils.serialize import dumps, loads
 
 
 class CourseManager(ArtemisManager):
@@ -11,8 +14,12 @@ class CourseManager(ArtemisManager):
     async def create_course(self, course: Course) -> Course:
         new_course = course
         new_course["id"] = None  # type: ignore
-        resp = await self._session.post_api_endpoint("/courses", json=new_course)
-        return await resp.json(loads=loads)
+        with MultipartWriter("form-data") as mpwriter:
+            part = mpwriter.append_payload(JsonPayload(course, headers=CIMultiDict(), dumps=dumps))
+            part.set_content_disposition("form-data", name="course", filename="blob")
+            part.headers.pop(aiohttp.hdrs.CONTENT_LENGTH, None)
+            resp = await self._session.post_api_endpoint("/courses", data=mpwriter)
+            return await resp.json(loads=loads)
 
     async def update_course(self, course: Course) -> ClientResponse:
         return await self._session.put_api_endpoint("/courses", json=course)

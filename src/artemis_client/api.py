@@ -528,6 +528,7 @@ class AbstractExercise(BaseEntity, total=False):
     teamMode: bool
     visibleToStudents: bool
     exampleSolutionPublished: bool
+    allowManualFeedbackRequests: bool
 
 
 ProgrammingLanguage = Literal[
@@ -584,6 +585,7 @@ class ProgrammingExercise(AbstractExercise, total=False):
     testRepositoryName: str
     branch: str
     testwiseCoverageEnabled: bool
+    startDate: datetime
 
 
 UMLDiagramType = Literal[
