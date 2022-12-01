@@ -1,5 +1,5 @@
 from typing import AsyncGenerator, List
-from artemis_client.api import ProgrammingExercise, StudentParticipation
+from artemis_client.api import ProgrammingExercise, Result, StudentParticipation
 from artemis_client.managers.manager import ArtemisManager
 from artemis_client.utils.serialize import loads
 
@@ -14,6 +14,13 @@ class ExerciseManager(ArtemisManager):
         participations: List[StudentParticipation] = await resp.json(loads=loads)
         for participation in participations:
             yield participation
+
+    async def get_results(self, exercise_id: int, with_submissions: bool = False) -> List[Result]:
+        params = {
+            "withSubmissions": str(with_submissions).lower()
+        }
+        resp = await self._session.get_api_endpoint(f"/exercises/{exercise_id}/results", params=params)
+        return await resp.json(loads=loads)
 
     async def get_with_template_and_solution(self, exercise_id: int, with_submission_results: bool = False) -> ProgrammingExercise:
         """

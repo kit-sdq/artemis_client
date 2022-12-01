@@ -1,7 +1,18 @@
 from aiohttp.client_exceptions import ClientResponseError
 import pytest
 from typeguard import check_type
-from artemis_client.api import Course, CourseWithExercises, CourseWithStats, Exercise, FileUploadExercise, ModelingExercise, ProgrammingExercise, QuizExercise, TextExercise, User
+from artemis_client.api import (
+    Course,
+    CourseWithExercises,
+    CourseWithStats,
+    Exercise,
+    FileUploadExercise,
+    ModelingExercise,
+    ProgrammingExercise,
+    QuizExercise,
+    TextExercise,
+    User,
+)
 
 from artemis_client.session import ArtemisSession
 
@@ -44,20 +55,29 @@ async def test_get_course_with_exercises(artemis_session: ArtemisSession):
         pytest.skip("No course found")
 
 
+@pytest.mark.dependency(
+    [
+        "test_programming_exercise_type",
+        "test_modeling_exercise_type",
+        "test_quiz_exercise_type",
+        "test_text_exercise_type",
+        "test_file_upload_exercise_type",
+    ]
+)
 @pytest.mark.asyncio
 async def test_get_exercises_for_course(artemis_session: ArtemisSession):
     found = False
     async for c in artemis_session.course.get_courses_with_stats():
         async for e in artemis_session.course.get_exercises_for_course(c["id"]):
             check_type("Exercise", e, Exercise)
-            # If this test failes, check the test_*_exercise_type tests first
-            # Then check if a new ExerciseType was added and update the API
-            # entities
+            # If this test failes, check if a new ExerciseType was added and update the API
+            # entities and add test_*_exercise_type
             found = True
     if not found:
         pytest.skip("No course with exercises found")
 
 
+@pytest.mark.dependency()
 @pytest.mark.asyncio
 async def test_programming_exercise_type(artemis_session: ArtemisSession):
     found = False
@@ -71,6 +91,7 @@ async def test_programming_exercise_type(artemis_session: ArtemisSession):
         pytest.skip("No course with programming exercises found")
 
 
+@pytest.mark.dependency()
 @pytest.mark.asyncio
 async def test_modeling_exercise_type(artemis_session: ArtemisSession):
     async for c in artemis_session.course.get_courses_with_stats():
@@ -82,6 +103,7 @@ async def test_modeling_exercise_type(artemis_session: ArtemisSession):
     pytest.skip("No course with modeling exercises found")
 
 
+@pytest.mark.dependency()
 @pytest.mark.asyncio
 async def test_quiz_exercise_type(artemis_session: ArtemisSession):
     async for c in artemis_session.course.get_courses_with_stats():
@@ -93,6 +115,7 @@ async def test_quiz_exercise_type(artemis_session: ArtemisSession):
     pytest.skip("No course with quiz exercises found")
 
 
+@pytest.mark.dependency()
 @pytest.mark.asyncio
 async def test_text_exercise_type(artemis_session: ArtemisSession):
     async for c in artemis_session.course.get_courses_with_stats():
@@ -104,6 +127,7 @@ async def test_text_exercise_type(artemis_session: ArtemisSession):
     pytest.skip("No course with text exercises found")
 
 
+@pytest.mark.dependency()
 @pytest.mark.asyncio
 async def test_file_upload_exercise_type(artemis_session: ArtemisSession):
     async for c in artemis_session.course.get_courses_with_stats():

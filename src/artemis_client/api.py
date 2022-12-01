@@ -1,5 +1,6 @@
 from typing import Any, Optional, TypedDict, List, Literal, Union
 from datetime import datetime
+from typing_extensions import NotRequired, Required
 
 
 Role = Literal["ROLE_ADMIN", "ROLE_INSTRUCTOR", "ROLE_TA", "ROLE_USER", "ROLE_EDITOR"]
@@ -289,28 +290,33 @@ class Result(BaseEntity, total=False):
     feedbacks: List[Feedback]
     participation: "Participation"
     durationInMinutes: int
+    codeIssueCount: int
+    passedTestCaseCount: int
+    testCaseCount: int
 
 
-class Submission(BaseEntity, total=False):
+class AbstractSubmission(BaseEntity, total=False):
     submitted: bool
     submissionDate: datetime
     type: SubmissionType
     exampleSubmission: bool
-    submissionExerciseType: SubmissionExerciseType
     durationInMinutes: int
     results: List[Result]
     participation: "StudentParticipation"
     isSynced: bool
+    empty: bool
 
 
-class ProgrammingSubmission(Submission, total=False):
+class ProgrammingSubmission(AbstractSubmission, total=False):
+    submissionExerciseType: Literal["programming"]
     commitHash: str
     buildFailed: bool
     buildArtifact: bool
-    # SubmissionExerciseType must be programming
 
 
-ParticipationType = Literal["student", "programming", "template", "solution"]
+# Change to Union if there are new SubmissionTypes
+Submission = ProgrammingSubmission
+
 
 InitializationState = Literal[
     "UNINITIALIZED",
@@ -324,26 +330,67 @@ InitializationState = Literal[
 ]
 
 
-class Participation(BaseEntity, total=False):
-    type: ParticipationType
-    # Todo: Better typing. Currently the subclasses only are differentiated by this value
+ParticipationType = Literal["student", "programming", "template", "solution"]
+
+
+class AbstractParticipation(BaseEntity, total=False):
+    type: Required[ParticipationType]
     initializationState: InitializationState
     initializationDate: datetime
-    presentationScore: int
-    results: List[Result]
-    submissions: List[Submission]
-    exercise: "Exercise"
+    presentationScore: NotRequired[int]
+    results: NotRequired[List[Result]]
+    submissions: NotRequired[List[Submission]]
+    exercise: NotRequired["Exercise"]
 
     participantName: str
     participantIdentifier: str
-    submissionCount: str
+    submissionCount: int
+    isTestRun: NotRequired[bool]
 
 
-class StudentParticipation(Participation, total=False):
+class AbstractBaseProgrammingExerciseParticipation(AbstractParticipation, total=False):
+    pass
+
+
+class StudentParticipation(AbstractParticipation, total=False):
     student: User
     team: Team
     participantIdentifier: str
     testRun: bool
+
+
+class ProgrammingExerciseStudentParticipation(StudentParticipation, total=False):
+    repositoryUrl: str
+    userIndependentRepositoryUrl: str
+    buildPlanId: str
+    buildPlanUrl: str
+    branch: str
+
+
+class SolutionProgrammingExerciseParticipation(
+    AbstractBaseProgrammingExerciseParticipation, total=False
+):
+    programmingExercise: "ProgrammingExercise"
+    repositoryUrl: str
+    buildPlanId: str
+    buildPlanUrl: str
+
+
+class TemplateProgrammingExerciseParticipation(
+    AbstractBaseProgrammingExerciseParticipation, total=False
+):
+    programmingExercise: "ProgrammingExercise"
+    repositoryUrl: str
+    buildPlanId: str
+    buildPlanUrl: str
+
+
+Participation = Union[
+    StudentParticipation,
+    ProgrammingExerciseStudentParticipation,
+    SolutionProgrammingExerciseParticipation,
+    TemplateProgrammingExerciseParticipation,
+]
 
 
 TutorParticipationStatus = Literal[
@@ -390,26 +437,6 @@ AttachmentType = Literal[
     "FILE",
     "URL",
 ]
-
-
-class ProgrammingExerciseStudentParticipation(StudentParticipation, total=False):
-    repositoryUrl: str
-    buildPlanId: str
-    buildPlanUrl: str
-
-
-class SolutionProgrammingExerciseParticipation(Participation, total=False):
-    programmingExercise: "ProgrammingExercise"
-    repositoryUrl: str
-    buildPlanId: str
-    buildPlanUrl: str
-
-
-class TemplateProgrammingExerciseParticipation(Participation, total=False):
-    programmingExercise: "ProgrammingExercise"
-    repositoryUrl: str
-    buildPlanId: str
-    buildPlanUrl: str
 
 
 class LearningGoal(BaseEntity, total=False):
