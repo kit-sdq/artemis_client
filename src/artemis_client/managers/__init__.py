@@ -8,6 +8,7 @@ from .exercise import ExerciseManager
 from .submission import SubmissionManager
 from .assessment import AssessmentManager
 from .result import ResultManager
+from .participation import ParticipationManager
 
 __all__ = [
     "ArtemisManager",
@@ -20,4 +21,5 @@ __all__ = [
     "SubmissionManager",
     "AssessmentManager",
     "ResultManager",
+    "ParticipationManager"
 ]

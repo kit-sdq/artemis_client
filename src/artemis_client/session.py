@@ -57,6 +57,8 @@ class ArtemisSession:
         """See :class:`~artemis_client.managers.AssessmentManager`"""
         self.result = artemis_client.managers.ResultManager(self)
         """See :class:`~artemis_client.managers.ResultManager`"""
+        self.participation = artemis_client.managers.ParticipationManager(self)
+        """See :class:`~artemis_client.managers.ParticipationManager`"""
 
     ###################################
 
