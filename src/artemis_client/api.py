@@ -1,3 +1,4 @@
+import hashlib
 from typing import Any, Optional, TypedDict, List, Literal, Union
 from datetime import datetime
 from typing_extensions import NotRequired, Required
@@ -306,16 +307,23 @@ class AbstractSubmission(BaseEntity, total=False):
     isSynced: bool
     empty: bool
 
+SubmissionExerciseType = Literal["programming", "text"]
 
 class ProgrammingSubmission(AbstractSubmission, total=False):
-    submissionExerciseType: Literal["programming"]
+    # must be programming
+    submissionExerciseType: SubmissionExerciseType
     commitHash: str
     buildFailed: bool
     buildArtifact: bool
 
+class TextSubmission(AbstractSubmission, total=False):
+    # must be text
+    submissionExerciseType: SubmissionExerciseType
+    # the submitted answer by the student
+    text: str
 
 # Change to Union if there are new SubmissionTypes
-Submission = ProgrammingSubmission
+Submission = Union[ProgrammingSubmission, TextSubmission]
 
 
 InitializationState = Literal[
@@ -773,3 +781,53 @@ class UserPageableSearchDTO(PageableSearchDTO):
     status: str
     courseIds: str
     registrationNumbers: str
+
+TextBlockType = Literal["AUTOMATIC", "MANUAL"]
+
+class TextBlock:
+    submission_id: int
+    text: str
+    startIndex: int
+    endIndex: int
+    numberOfAffectedSubmissions: int = 0
+    type: TextBlockType = "AUTOMATIC"
+
+    def __init__(
+        self,
+        submission_id: int,
+        text: str,
+        startIndex: int,
+        endIndex: int,
+        numberOfAffectedSubmissions: int = 0,
+        type: TextBlockType = "AUTOMATIC"
+    ) -> None:
+        self.submission_id = submission_id
+        self.text = text
+        self.startIndex = startIndex
+        self.end_index = endIndex
+        self.numberOfAffectedSubmissions = numberOfAffectedSubmissions
+        self.type = type
+
+    # https://github.com/ls1intum/Artemis/blob/e56f7375d711c0fa0e791980b32ea9bd775162ad/src/main/webapp/app/entities/text-block.model.ts#L21
+    def compute_id(self) -> str:
+        return hashlib.sha1(
+            f"{self.submission_id};{self.startIndex}-{self.endIndex};{self.text}".encode("utf-8")
+        ).hexdigest()
+
+    def to_dict(self) -> dict[str, Union[str, int]]:
+        return {
+            "id": self.compute_id(),
+            "text": self.text,
+            "startIndex": self.startIndex,
+            "endIndex": self.endIndex,
+            "numberOfAffectedSubmissions": self.numberOfAffectedSubmissions,
+            "type": self.type,
+        }
+
+class TextFeedback(TypedDict):
+    credits: int
+    # a unique id for the feedback (should be generated from TextBlock)
+    reference: str
+    # the text of the feedback
+    detailText: str
+    type: TextBlockType # "MANUAL"
