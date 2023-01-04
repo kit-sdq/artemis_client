@@ -320,7 +320,7 @@ class TextSubmission(AbstractSubmission, total=False):
     # must be text
     submissionExerciseType: SubmissionExerciseType
     # the submitted answer by the student
-    text: str
+    text: Required[str]
 
 # Change to Union if there are new SubmissionTypes
 Submission = Union[ProgrammingSubmission, TextSubmission]
