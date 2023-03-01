@@ -10,7 +10,7 @@ aiohttp = "^3.8.4"
 typing-extensions = "^4.4.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
+black = "^23.1.0"
 flake8 = "^5.0.4"
 tox = "^3.25.1"
 
