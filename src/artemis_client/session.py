@@ -142,7 +142,7 @@ class ArtemisSession:
         resp = await self._get_session().post("/api/authenticate", json=self._login_vm)
         if resp.ok:
             LOG.debug(f"logged in to {self._url}")
-            return resp.headers[AUTHORIZATION_HEADER]
+            return resp.cookies["jwt"].value
         else:
             raise ConnectionError(f"could not login to {self._url}")
 
@@ -163,7 +163,6 @@ class ArtemisSession:
                 LOG.debug(f"[{local_request_num}] <-/- {e}")
                 LOG.debug(f"attempt logging in as {self._login_vm['username']}...")
                 self._token = await self._login()
-                self._get_session().headers[AUTHORIZATION_HEADER] = self._token
                 # Try again
                 return await self._request_endpoint(method, endpoint, tries + 1, **kwargs)
             else:
