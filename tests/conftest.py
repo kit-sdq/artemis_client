@@ -1,14 +1,14 @@
 """ This file configures pytest.
 """
 import asyncio
-from typing import List
-from aiohttp.client_exceptions import ClientResponseError
-import pytest
 import random
 import string
 from datetime import datetime, timedelta
-from artemis_client.api import Course
+from typing import List
 
+import pytest
+from aiohttp.client_exceptions import ClientResponseError
+from artemis_client.api import Course
 from artemis_client.session import ArtemisSession
 
 
@@ -23,6 +23,10 @@ def event_loop():
 @pytest.fixture(scope="session", autouse=True)
 async def artemis_session():
     async with ArtemisSession() as session:
+        try:
+            await session.get_api_endpoint("/account")
+        except (ClientResponseError, ConnectionError):
+            pytest.fail("Session is not logged in. Check your login data.")
         yield session
 
 

@@ -1,19 +1,21 @@
-from aiohttp import ClientSession
-from typing import Optional
 import logging
+from typing import Optional
 
-from aiohttp.client_reqrep import ClientResponse
+from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientResponseError
+from aiohttp.client_reqrep import ClientResponse
 
 from artemis_client.api import LoginVM
 from artemis_client.utils.serialize import dumps
 from artemis_client.utils.url import sanitize_url
+
 from .configuration import get_value
 
-AUTHORIZATION_HEADER = "authorization"
+JWT_COOKIE = "jwt"
 MAX_LOGIN_TRIES = 10
 LOG = logging.getLogger("ArtemisSession")
-REQUEST_NUM = 0
+
+request_num = 0
 
 
 class ArtemisSession:
@@ -66,7 +68,7 @@ class ArtemisSession:
         LOG.debug("instancing new client session")
         self._session = ClientSession(self._url, raise_for_status=True, json_serialize=dumps)
         if self._token is not None:
-            self._get_session().headers[AUTHORIZATION_HEADER] = self._token
+            self._get_session().cookie_jar.update_cookies({JWT_COOKIE: self._token})
         return self
 
     async def __aexit__(self, *_):
@@ -139,18 +141,21 @@ class ArtemisSession:
 
     async def _login(self) -> str:
         # Do not use _request_* to not catch 401 ClientResponseError
-        resp = await self._get_session().post("/api/authenticate", json=self._login_vm)
-        if resp.ok:
-            LOG.debug(f"logged in to {self._url}")
-            return resp.cookies["jwt"].value
-        else:
-            raise ConnectionError(f"could not login to {self._url}")
+        LOG.debug(f"attempt logging in as {self._login_vm['username']}...")
+        try:
+            resp = await self._get_session().post("/api/authenticate", json=self._login_vm)
+            LOG.debug(f"...logged in to {self._url}")
+            return resp.cookies[JWT_COOKIE].value
+        except ClientResponseError as e:
+            error_msg = f"...could not log in to {self._url}, error: {e}"
+            LOG.error(error_msg)
+            raise ConnectionError(error_msg)
 
     async def _request_endpoint(self, method: str, endpoint: str, tries=0, **kwargs) -> ClientResponse:
-        global REQUEST_NUM
+        global request_num
 
-        local_request_num = REQUEST_NUM
-        REQUEST_NUM = REQUEST_NUM + 1
+        local_request_num = request_num
+        request_num = request_num + 1
 
         LOG.debug(f"[{local_request_num}] ---> {method.upper()} {endpoint} {kwargs}")
         try:
@@ -161,7 +166,6 @@ class ArtemisSession:
             if e.status == 401 and tries < MAX_LOGIN_TRIES:
                 # Attempt to log in
                 LOG.debug(f"[{local_request_num}] <-/- {e}")
-                LOG.debug(f"attempt logging in as {self._login_vm['username']}...")
                 self._token = await self._login()
                 # Try again
                 return await self._request_endpoint(method, endpoint, tries + 1, **kwargs)

@@ -1,14 +1,8 @@
 import pytest
-from typeguard import check_type
 from aiohttp.client_exceptions import ClientResponseError
-
 from artemis_client.api import UserDTO
 from artemis_client.session import ArtemisSession
-
-
-@pytest.mark.asyncio
-async def test_is_authenticated(artemis_session: ArtemisSession):
-    assert await artemis_session.account.is_authenticated()
+from typeguard import check_type
 
 
 @pytest.mark.asyncio
