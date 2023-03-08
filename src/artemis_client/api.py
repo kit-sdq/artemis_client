@@ -522,6 +522,7 @@ class AbstractExercise(BaseEntity, total=False):
     releaseDate: datetime
     dueDate: datetime
     assessmentDueDate: datetime
+    exampleSolutionPublicationDate: datetime
     maxPoints: float
     bonusPoints: float
     assessmentType: AssessmentType
@@ -613,6 +614,7 @@ class ProgrammingExercise(AbstractExercise, total=False):
     branch: str
     testwiseCoverageEnabled: bool
     startDate: datetime
+    releaseTestsWithExampleSolution: bool
 
 
 UMLDiagramType = Literal[
