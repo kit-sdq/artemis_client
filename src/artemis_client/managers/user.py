@@ -28,7 +28,7 @@ class UserManager(ArtemisManager):
         if not 8 <= len(user["password"]) <= 50:
             raise ValueError("Password has invalid length")
 
-        return await self._session.post_api_endpoint("/users", json=user)
+        return await self._session.post_api_endpoint("/admin/users", json=user)
 
     async def update_user(self, user: ManagedUserVM):
         """Creates an user.
@@ -47,10 +47,10 @@ class UserManager(ArtemisManager):
         if not 8 <= len(user["password"]) <= 50:
             raise ValueError("Password has invalid length")
 
-        return await self._session.put_api_endpoint("/users", json=user)
+        return await self._session.put_api_endpoint("/admin/users", json=user)
 
     async def get_authorities(self) -> List[Role]:
-        resp = await self._session.get_api_endpoint("/users/authorities")
+        resp = await self._session.get_api_endpoint("/admin/users/authorities")
         roles = await resp.json(loads=loads)
         return roles
 
@@ -60,7 +60,7 @@ class UserManager(ArtemisManager):
         return user
 
     async def delete_user(self, login: str) -> ClientResponse:
-        resp = await self._session.delete_api_endpoint("/users/" + login)
+        resp = await self._session.delete_api_endpoint("/admin/users/" + login)
         return resp
 
     async def get_users(
@@ -85,7 +85,7 @@ class UserManager(ArtemisManager):
         }
 
         async for obj in paginate_json(
-            self._session.get_api_endpoint, "/users", params, page_size=page_size
+            self._session.get_api_endpoint, "/admin/users", params, page_size=page_size
         ):
             yield obj
 

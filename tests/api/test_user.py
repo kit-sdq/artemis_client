@@ -1,16 +1,15 @@
 from typing import List
-from aiohttp.client_exceptions import ClientResponseError
-import pytest
 
-from typeguard import check_type
+import pytest
+from aiohttp.client_exceptions import ClientResponseError
 from artemis_client.api import (
     ManagedUserVM,
     Role,
     SearchUserDTO,
     UserDTO,
 )
-
 from artemis_client.session import ArtemisSession
+from typeguard import check_type
 
 
 @pytest.mark.asyncio
@@ -44,13 +43,21 @@ async def test_create_delete_user(artemis_session: ArtemisSession):
         "visibleRegistrationNumber": "",
         "groups": []
     }
-    resp = await artemis_session.user.create_user(test_user)
-    assert resp.ok
+    error = None
+    try:
+        await artemis_session.user.create_user(test_user)
+    except ClientResponseError as e:
+        error = e
 
     assert await artemis_session.user.get_user("testuser_hda783")
+
     await artemis_session.user.delete_user("testuser_hda783")
+
     with pytest.raises(ClientResponseError):
         await artemis_session.user.get_user("testuser_hda783")
+
+    if error:
+        pytest.fail(f"create_user returned {error.status} but user existed anyways")
 
 
 @pytest.mark.asyncio

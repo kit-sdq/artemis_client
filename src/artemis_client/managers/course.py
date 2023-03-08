@@ -18,7 +18,7 @@ class CourseManager(ArtemisManager):
             part = mpwriter.append_payload(JsonPayload(course, headers=CIMultiDict(), dumps=dumps))
             part.set_content_disposition("form-data", name="course", filename="blob")
             part.headers.pop(aiohttp.hdrs.CONTENT_LENGTH, None)
-            resp = await self._session.post_api_endpoint("/courses", data=mpwriter)
+            resp = await self._session.post_api_endpoint("/admin/courses", data=mpwriter)
             return await resp.json(loads=loads)
 
     async def update_course(self, course: Course) -> ClientResponse:
@@ -59,7 +59,7 @@ class CourseManager(ArtemisManager):
                 yield exercise
 
     async def delete_course(self, course_id: int) -> ClientResponse:
-        return await self._session.delete_api_endpoint(f"/courses/{course_id}")
+        return await self._session.delete_api_endpoint(f"/admin/courses/{course_id}")
 
     async def archive_course(self, course_id: int) -> ClientResponse:
         return await self._session.put_api_endpoint(f"/courses/{course_id}/archive")
