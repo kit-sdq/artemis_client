@@ -11,3 +11,8 @@ class AssessmentManager(ArtemisManager):
             self._session
         )
         """See :class:`~artemis_client.managers.assessment_managers.ProgrammingAssesmentManager`"""
+
+        self.text = assessment_managers.TextAssessmentManager(
+            self._session
+        )
+        """See :class:`~artemis_client.managers.assessment_managers.TextAssessmentManager`"""

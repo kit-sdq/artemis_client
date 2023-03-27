@@ -10,3 +10,8 @@ class SubmissionManager(ArtemisManager):
             self._session
         )
         """See :class:`~artemis_client.managers.submission_managers.ProgrammingSubmissionManager`"""
+
+        self.text = submission_managers.TextSubmissionManager(
+            self._session
+        )
+        """See :class:`~artemis_client.managers.submission_managers.TextSubmissionManager`"""
